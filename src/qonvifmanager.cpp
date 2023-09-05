@@ -55,6 +55,16 @@ QOnvifManager::QOnvifManager(
 
 QOnvifManager::~QOnvifManager() {}
 
+QString
+QOnvifManager::user() const {
+    return d_ptr->iuserName;
+}
+
+QString
+QOnvifManager::password() const {
+    return d_ptr->ipassword;
+}
+
 bool
 QOnvifManager::refreshDevicesList() {
     Q_D(QOnvifManager);

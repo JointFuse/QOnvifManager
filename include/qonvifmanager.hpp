@@ -37,6 +37,9 @@ public:
         const QString _username, const QString _password, QObject* _parent = 0);
     ~QOnvifManager();
 
+    QString user() const;
+    QString password() const;
+
     bool refreshDevicesList();
     bool refreshDeviceCapabilities(QString _deviceEndPointAddress);
     bool refreshDeviceInformations(QString _deviceEndPointAddress);
