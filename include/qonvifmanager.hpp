@@ -129,11 +129,11 @@ public:
     std::shared_ptr<device::QOnvifDevice> device(QString _deviceEndPointAddress);
     QMap<QString, std::shared_ptr<device::QOnvifDevice>>& devicesMap();
 
+    bool cameraExist(const QString& endpoinAddress);
 
 protected:
     Q_DECLARE_PRIVATE(QOnvifManager)
     QScopedPointer<QOnvifManagerPrivate> d_ptr;
-    bool cameraExist(const QString& endpoinAddress);
 
 public slots:
     void onReciveData(QHash<QString, QString> _deviceHash);
