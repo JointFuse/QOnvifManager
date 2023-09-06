@@ -31,7 +31,10 @@ MainWindow::onNewDeviceFinded(QOnvifDevice* _device) {
             .replace("/onvif/device_service", ""),
         _device->data().probeData.endPointAddress);
 
-    _device->loadDefaultPtzConfiguration();
+    _device->refreshProfiles();
+    auto prfLst = _device->data().profiles.toKenPro;
+    if (prfLst.size())
+        _device->setMediaProfile(prfLst.first());
 }
 
 void

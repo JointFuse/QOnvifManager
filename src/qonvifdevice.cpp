@@ -33,6 +33,7 @@ public:
     QString iuserName;
     QString ipassword;
     Data    idata;
+    QString iMediaProfile;
 
     // onvif managers
     ONVIF::DeviceManagement* ideviceManagement;
@@ -967,28 +968,28 @@ public:
     // ptz //todo remove profile tokens hardcode
     bool refreshPresets() {
         ONVIF::Presets* presets = new ONVIF::Presets;
-        presets->setProfileToken(idata.ptz.config.ptzConfigurationToken);
+        presets->setProfileToken(iMediaProfile);
         iptzManagement->getPresets(presets);
         delete presets;
         return true;
     }
     bool goHomePosition() {
         ONVIF::GotoHomePosition* goHomePose = new ONVIF::GotoHomePosition;
-        goHomePose->setProfileToken(idata.ptz.config.ptzConfigurationToken);
+        goHomePose->setProfileToken(iMediaProfile);
         iptzManagement->gotoHomePosition(goHomePose);
         delete goHomePose;
         return true;
     }
     bool setHomePosition() {
         ONVIF::HomePosition* homePosition = new ONVIF::HomePosition;
-        homePosition->setProfileToken(idata.ptz.config.ptzConfigurationToken);
+        homePosition->setProfileToken(iMediaProfile);
         iptzManagement->setHomePosition(homePosition);
         delete homePosition;
         return true;
     }
     bool continuousMove(const float x, const float y, const float z) {
         ONVIF::ContinuousMove* continuousMove = new ONVIF::ContinuousMove;
-        continuousMove->setProfileToken(idata.ptz.config.ptzConfigurationToken);
+        continuousMove->setProfileToken(iMediaProfile);
         continuousMove->setPanTiltX(x);
         continuousMove->setPanTiltY(y);
         continuousMove->setZoomX(z);
@@ -998,12 +999,20 @@ public:
     }
     bool stopMovement() {
         ONVIF::Stop* stop = new ONVIF::Stop;
-        stop->setProfileToken(idata.ptz.config.ptzConfigurationToken);
+        stop->setProfileToken(iMediaProfile);
         stop->setPanTilt(true);
         stop->setZoom(true);
         iptzManagement->stop(stop);
         delete stop;
         return true;
+    }
+
+    void setMediaProfile(QString token) {
+        iMediaProfile = token;
+    }
+
+    QString mediaProfile() {
+        return iMediaProfile;
     }
 };
 
@@ -1236,6 +1245,17 @@ bool
 QOnvifDevice::stopMovement() {
     return d_ptr->stopMovement();
 }
+
+void
+QOnvifDevice::setMediaProfile(QString token) {
+    d_ptr->setMediaProfile(token);
+}
+
+QString
+QOnvifDevice::mediaProfile() {
+    return d_ptr->mediaProfile();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace device

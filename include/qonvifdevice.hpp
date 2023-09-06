@@ -82,6 +82,9 @@ public:
 
     bool refreshImageSetting();
     bool refreshImageSettingOptions();
+
+    void setMediaProfile(QString token);
+    QString mediaProfile();
 private:
     Q_DECLARE_PRIVATE(QOnvifDevice)
     QScopedPointer<QOnvifDevicePrivate> d_ptr;
