@@ -1,10 +1,10 @@
-#include "devicesearcher.h"
-#include "message.h"
+﻿#include "devicesearcher.h"
 #include <QXmlQuery>
 #include <QBuffer>
 #include "messageparser.h"
 #include <QCoreApplication>
 #include <QNetworkInterface>
+#include <QRandomGenerator>
 
 #ifdef WIN32
 #include <WS2tcpip.h>
@@ -52,17 +52,24 @@ DeviceSearcher::DeviceSearcher(QHostAddress &addr, QObject *parent) : QObject(pa
 {
     mUdpSocket = new QUdpSocket(this);
     //QHostAddress host("192.168.0.1");
-    //mUdpSocket->bind(QHostAddress::Any, 0, QUdpSocket::ShareAddress);
-    mUdpSocket->bind(addr, 0, QUdpSocket::ShareAddress);
-    int opt=4 * 1024 * 1024;
+#ifndef QT_DEBUG
+    mUdpSocket->bind(QHostAddress::Broadcast, 0, QUdpSocket::ShareAddress);
+#else
+    qDebug() << "[device searcher udp] socket state = " << mUdpSocket->bind(QHostAddress::Broadcast, 0, QUdpSocket::ShareAddress) << "\n";
+#endif
+//    mUdpSocket->bind(addr, 0, QUdpSocket::ShareAddress);
 
+//    int opt=4 * 1024 * 1024;
 //    if (setsockopt(mUdpSocket->socketDescriptor(), SOL_SOCKET,
 //                   SO_RCVBUF, (char *)&opt, sizeof(int)) < 0) {
 //        printf("Set ----> SO_RCVBUF error\n");
 //    }
 
+
     connect(mUdpSocket, SIGNAL(readyRead()),
             this, SLOT(readPendingDatagrams()));
+    connect(&m_timer, SIGNAL(timeout()),
+            this, SLOT(sendSearchMsg()));
 }
 
 DeviceSearcher::~DeviceSearcher()
@@ -75,23 +82,55 @@ DeviceSearcher::~DeviceSearcher()
 }
 
 
+void DeviceSearcher::startSearch()
+{
+    static constexpr auto MAX_DEL_MS = 500;
+    if (m_timer.isActive()) return;
+    msg = std::unique_ptr<Message>(Message::getOnvifSearchMessage());
+    m_recall = 0;
+    m_timer.setInterval(QRandomGenerator::global()->bounded(MAX_DEL_MS));
+    m_timer.start();
+}
+
 void DeviceSearcher::sendSearchMsg()
 {
-    Message *msg = Message::getOnvifSearchMessage();
+    static constexpr auto MAX_SENDS = 2;
+    if (MAX_SENDS <= m_recall)
+    {
+        m_timer.stop();
+        emit deviceSearchingEnded();
+        return;
+    }
+    ++m_recall;
     QString msg_str = msg->toXmlStr();
-    mUdpSocket->writeDatagram(msg_str.toUtf8(), QHostAddress("239.255.255.250"), 3702);
-    delete msg;
+    auto interfaces = QNetworkInterface::allInterfaces();
+    for (auto& intr : interfaces)
+    {
+        if (!intr.isValid() ||
+            (intr.type() != QNetworkInterface::Ethernet &&
+             intr.type() != QNetworkInterface::Loopback &&
+             intr.type() != QNetworkInterface::Wifi))
+            continue;
+        mUdpSocket->setMulticastInterface(intr);
+        auto sendedSize = mUdpSocket->writeDatagram(msg_str.toUtf8(), QHostAddress("239.255.255.250"), 3702);
+        qDebug() << "[" << intr.humanReadableName() << "]" << "sended search message size = " << sendedSize;
+        if (sendedSize) qDebug() << "REQQQQQQQ: " << msg->toXmlStr() << "\n"; // todolog
+    }
 }
 
 void DeviceSearcher::readPendingDatagrams()
 {
+    m_timer.stop();
     do {
         QByteArray datagram;
         datagram.resize(mUdpSocket->pendingDatagramSize());
         QHostAddress sender;
         quint16 senderPort;
-        mUdpSocket->readDatagram(datagram.data(), datagram.size(),
-                                 &sender, &senderPort);
+        qDebug() << "resolved search message size = "
+                 << mUdpSocket->readDatagram(datagram.data(), datagram.size(),
+                                             &sender, &senderPort);
+        qDebug() << "RESSSSSSS: "
+                 << QString::fromStdString(datagram.toStdString()) << "\n";
 
 //        qDebug() << "========> \n" << datagram << "\n++++++++++++++++++++++++\n";
 

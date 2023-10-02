@@ -1,4 +1,4 @@
-#include "client.h"
+﻿#include "client.h"
 #include <QEventLoop>
 #include <QUrl>
 #include <QDebug>
@@ -23,7 +23,7 @@ QString Client::sendData(const QString &data)
     QNetworkReply *reply = networkManager->post(request, data.toUtf8());
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
 
     return reply->readAll();
 }

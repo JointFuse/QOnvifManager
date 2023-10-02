@@ -1,4 +1,4 @@
-#include "message.h"
+﻿#include "message.h"
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDebug>
@@ -48,22 +48,22 @@ Message*
 Message::getOnvifSearchMessage() {
     QHash<QString, QString> namespaces;
     namespaces.insert("a", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
-    namespaces.insert("d", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
-    namespaces.insert("dn", "http://www.onvif.org/ver10/network/wsdl");
-    namespaces.insert("dn", "http://www.onvif.org/ver10/network/wsdl");
     Message*    msg    = new Message(namespaces);
-    QDomElement action = newElement(
-        "a:Action", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
+    QDomElement action = newElement("a:Action", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
+    action.setAttribute("soap:mustUnderstand", "1");
     QDomElement message_id = newElement("a:MessageID", "uuid:" + msg->uuid());
-    QDomElement to =
-        newElement("a:To", "urn:schemas-xmlsoap-org:ws:2005:04:discovery");
+    QDomElement to = newElement("a:To", "urn:schemas-xmlsoap-org:ws:2005:04:discovery");
+    to.setAttribute("soap:mustUnderstand", "1");
     msg->appendToHeader(action);
     msg->appendToHeader(message_id);
     msg->appendToHeader(to);
 
-    QDomElement probe = newElement("d:Probe");
-    probe.appendChild(newElement("d:Types", "dn:NetworkVideoTransmitter"));
-    probe.appendChild(newElement("d:Scopes"));
+    QDomElement probe = newElement("Probe");
+    probe.setAttribute("xmlns", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
+    QDomElement types = newElement("d:Types", "dp0:NetworkVideoTransmitter");
+    types.setAttribute("xmlns:d", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
+    types.setAttribute("xmlns:dp0", "http://www.onvif.org/ver10/network/wsdl");
+    probe.appendChild(types);
     msg->appendToBody(probe);
 
     return msg;

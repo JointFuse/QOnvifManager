@@ -13,7 +13,13 @@ CONFIG += staticlib
 
 DESTDIR  = ../bin/
 
-TARGET = QOnvifManager
+!Debug: {
+    TARGET = QOnvifManager
+}
+
+Debug: {
+    TARGET = QOnvifManager_debug
+}
 
 TEMPLATE = lib
 

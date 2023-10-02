@@ -49,8 +49,8 @@ QOnvifManager::QOnvifManager(
     connect(
         d->ideviceSearcher,
         &ONVIF::DeviceSearcher::deviceSearchingEnded,
-        [this]() { emit deviceSearchingEnded(); });
-    refreshDevicesList();
+        this,
+        &QOnvifManager::deviceSearchingEnded);
 }
 
 QOnvifManager::~QOnvifManager() {}
@@ -65,12 +65,18 @@ QOnvifManager::password() const {
     return d_ptr->ipassword;
 }
 
+void
+QOnvifManager::searchDevices() {
+    Q_D(QOnvifManager);
+    d->ideviceSearcher->startSearch();
+}
+
 bool
 QOnvifManager::refreshDevicesList() {
     Q_D(QOnvifManager);
 //    qDeleteAll(d->idevicesMap);
     d->idevicesMap.clear();
-    d->ideviceSearcher->sendSearchMsg();
+    d->ideviceSearcher->startSearch();
     return true;
 }
 

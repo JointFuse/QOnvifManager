@@ -23,10 +23,19 @@ HEADERS  += mainwindow.hpp
 
 FORMS    += mainwindow.ui
 
-LIBS += -L$$PWD/../bin/ -lQOnvifManager
+!Debug {
+    LIBS += -L$$PWD/../bin/ -lQOnvifManager
+}
+Debug {
+    LIBS += -L$$PWD/../bin/ -lQOnvifManager_debug
+}
 
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
+
+Debug {
+    CONFIG += console
+}
 
 unix {
     TEMPDIR         = $$PRJDIR/tmp/unix/$$TARGET

@@ -40,6 +40,8 @@ public:
     QString user() const;
     QString password() const;
 
+    void searchDevices();
+
     bool refreshDevicesList();
     bool refreshDeviceCapabilities(QString _deviceEndPointAddress);
     bool refreshDeviceInformations(QString _deviceEndPointAddress);
