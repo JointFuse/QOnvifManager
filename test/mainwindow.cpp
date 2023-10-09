@@ -90,6 +90,8 @@ MainWindow::on_btnRefreshData_clicked() {
     on_btnGetDataAndTime_clicked();
 
     auto device = ionvifManager->device(currentDevice());
+    device->loadDefaultPtzConfiguration();
+    device->refreshPtzStatus();
     Q_UNUSED(device)
 
     // <- add a breake point here to see device informations in debuger.
@@ -186,5 +188,18 @@ void MainWindow::on_btnzoomIn_pressed() {
 
 void MainWindow::on_btnzoomOut_pressed() {
     ionvifManager->device(currentDevice())->continuousMove(0, 0, -0.5);
+}
+
+
+void MainWindow::on_horizontalSlider_zoom_sliderReleased()
+{
+    ionvifManager->device(currentDevice())->absoluteMove({ {ONVIF::Axis::Z, ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum()} });
+}
+
+
+void MainWindow::on_horizontalSlider_zoom_valueChanged(int value)
+{
+    if (ui->horizontalSlider_zoom->isSliderDown()) return;
+    ionvifManager->device(currentDevice())->absoluteMove({ {ONVIF::Axis::Z, value * 1.0 / ui->horizontalSlider_zoom->maximum()} });
 }
 

@@ -22,6 +22,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
@@ -74,6 +75,7 @@ public:
     QVBoxLayout *verticalLayout;
     QPushButton *btnsetHome;
     QPushButton *btngoHome;
+    QSlider *horizontalSlider_zoom;
     QSpacerItem *horizontalSpacer_3;
     QGridLayout *gridLayout_2;
     QPushButton *btnLeft;
@@ -316,6 +318,13 @@ public:
         btngoHome->setObjectName(QString::fromUtf8("btngoHome"));
 
         verticalLayout->addWidget(btngoHome);
+
+        horizontalSlider_zoom = new QSlider(centralWidget);
+        horizontalSlider_zoom->setObjectName(QString::fromUtf8("horizontalSlider_zoom"));
+        horizontalSlider_zoom->setMaximum(100);
+        horizontalSlider_zoom->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(horizontalSlider_zoom);
 
 
         horizontalLayout_7->addLayout(verticalLayout);

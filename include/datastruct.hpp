@@ -1,4 +1,4 @@
-#ifndef DATASTRUCT_HPP
+﻿#ifndef DATASTRUCT_HPP
 #define DATASTRUCT_HPP
 
 #include <QDateTime>
@@ -328,6 +328,22 @@ struct Data {
             QString panTiltSpace;
             float   zoomX;
         } config;
+        struct Status {
+            struct Position {
+                QString PantTiltPositionSpace;
+                float   panTiltX;
+                float   panTiltY;
+                QString ZoomPositionSpace;
+                float   zoomX;
+            } position;
+            struct MoveStatus {
+                bool   panTiltX;
+                bool   panTiltY;
+                bool   zoomX;
+            } moveStatus;
+            QString error;
+            QDateTime utcTime;
+        } status;
     } ptz;
     struct Profiles {
         QList<QString>                             toKenPro;

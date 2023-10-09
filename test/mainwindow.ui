@@ -281,6 +281,16 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QSlider" name="horizontalSlider_zoom">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -524,8 +534,8 @@
      <y>497</y>
     </hint>
     <hint type="destinationlabel">
-     <x>366</x>
-     <y>497</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

@@ -43,6 +43,9 @@ private slots:
     void on_btnDown_pressed();
     void on_btnzoomIn_pressed();
     void on_btnzoomOut_pressed();
+    void on_horizontalSlider_zoom_sliderReleased();
+
+    void on_horizontalSlider_zoom_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;

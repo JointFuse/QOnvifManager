@@ -1,4 +1,4 @@
-#ifndef PTZMANAGEMENT_H
+﻿#ifndef PTZMANAGEMENT_H
 #define PTZMANAGEMENT_H
 #include "service.h"
 #include "ptz_management/configurations.h"
@@ -15,6 +15,7 @@
 #include "ptz_management/homeposition.h"
 #include "ptz_management/configuration.h"
 #include "ptz_management/node.h"
+#include "ptz_management/status.h"
 
 namespace ONVIF {
     class PtzManagement : public Service {
@@ -25,6 +26,7 @@ namespace ONVIF {
         void getConfiguration(Configuration *configuration);
         void getNode(Node *node);
         void getPresets(Presets *presets);
+        void getStatus(Status* status);
         Nodes *getNodes();
 
         void removePreset(RemovePreset *removePreset);

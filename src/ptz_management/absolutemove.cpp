@@ -1,4 +1,4 @@
-#include "absolutemove.h"
+﻿#include "absolutemove.h"
 #include "message.h"
 using namespace ONVIF;
 
@@ -18,11 +18,11 @@ QDomElement AbsoluteMove::toxml()
     QDomElement profileToken = newElement("wsdl:ProfileToken",this->profileToken());
     QDomElement position = newElement("wsdl:Position");
     QDomElement positionPanTilt = newElement("sch:PanTilt");
-    positionPanTilt.setAttribute("x",this->positionPanTiltX());
-    positionPanTilt.setAttribute("y",this->positionPanTiltY());
+    if (m_x) positionPanTilt.setAttribute("x",this->positionPanTiltX());
+    if (m_y) positionPanTilt.setAttribute("y",this->positionPanTiltY());
     positionPanTilt.setAttribute("space",this->positionPanTiltSpace());
     QDomElement positionZoom = newElement("sch:Zoom");
-    positionZoom.setAttribute("x",this->positionZoomX());
+    if (m_z) positionZoom.setAttribute("x",this->positionZoomX());
     positionZoom.setAttribute("space",this->positionZoomSpace());
     QDomElement speed = newElement("wsdl:Speed");
     QDomElement speedPanTilt = newElement("sch:PanTilt");

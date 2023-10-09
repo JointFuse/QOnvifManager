@@ -1,4 +1,4 @@
-#include "ptzmanagement.h"
+﻿#include "ptzmanagement.h"
 #include <QDebug>
 
 using namespace ONVIF;
@@ -688,4 +688,27 @@ void PtzManagement::getNode(Node *node)
     }
     delete msg;
     delete result;
+}
+
+void PtzManagement::getStatus(Status* status)
+{
+    Message *msg = newMessage();
+    msg->appendToBody(status->toxml());
+    MessageParser *result = sendMessage(msg);
+    if(result != NULL) {
+        QXmlQuery *query = result->query();
+        QDomNodeList itemNodeList;
+        QDomNode node1;
+        QDomDocument doc;
+        QString value,xml;
+        query->setQuery(result->nameSpace()+"doc($inputDocument)//tptz:PTZStatus");
+        query->evaluateTo(&xml);
+        doc.setContent(xml);
+        itemNodeList = doc.elementsByTagName("tptz:PTZStatus");
+        for(int i=0; i<itemNodeList.size(); i++) {
+            node1= itemNodeList.at(i);
+            value = node1.toElement().attribute("token");
+            status->setProfileToken(value.trimmed());
+        }
+    }
 }

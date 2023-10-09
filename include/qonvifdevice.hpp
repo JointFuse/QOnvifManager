@@ -2,6 +2,7 @@
 #define QONVIFDEVICE_HPP
 
 #include "datastruct.hpp"
+#include "QOnvifManager/ptz_management/absolutemove.h"
 
 #include <QDateTime>
 #include <QObject>
@@ -73,11 +74,13 @@ public:
 
     // ptz management
     bool refreshPtzConfiguration();
+    bool refreshPtzStatus();
     bool loadDefaultPtzConfiguration();
     bool refreshPresets();
     bool goHomePosition();
     bool setHomePosition();
     bool continuousMove(const float x, const float y, const float z);
+    bool absoluteMove(const std::map<ONVIF::Axis, float> vls);
     bool stopMovement();
 
     bool refreshImageSetting();

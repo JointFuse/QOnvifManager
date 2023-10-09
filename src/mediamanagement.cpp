@@ -1,4 +1,4 @@
-#include "mediamanagement.h"
+﻿#include "mediamanagement.h"
 #include "messageparser.h"
 #include <QDebug>
 #include <QXmlResultItems>
@@ -1805,11 +1805,11 @@ MediaManagement::getAudioEncoderConfigurations() {
 }
 
 VideoSourceConfiguration*
-MediaManagement::getVideoSourceConfiguration() {
+MediaManagement::getVideoSourceConfiguration(QString name) {
     VideoSourceConfiguration* videoSourceConfiguration = NULL;
     Message*                  msg                      = newMessage();
     QDomElement               token =
-        newElement("wsdl:ConfigurationToken", "profile_VideoSource_1");
+        newElement("wsdl:ConfigurationToken", name);
     QDomElement body = newElement("wsdl:GetVideoSourceConfiguration");
     body.appendChild(token);
     msg->appendToBody(body);

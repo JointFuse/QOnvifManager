@@ -888,6 +888,30 @@ public:
 
         return true;
     }
+    bool refreshPtzStatus() {
+        ONVIF::Status* status = new ONVIF::Status;
+        status->setProfileToken(iMediaProfile);
+        iptzManagement->getStatus(status);
+        auto& des = idata.ptz.status;
+
+        des.position.panTiltX   = status->positionPanTiltX();
+        des.position.panTiltY   = status->positionPanTiltY();
+        des.position.zoomX      = status->positionZoomX();
+        des.moveStatus.panTiltX = status->moveStatusPanTiltX();
+        des.moveStatus.panTiltX = status->moveStatusPanTiltY();
+        des.moveStatus.panTiltX = status->moveStatusZoomX();
+        des.error               = status->error();
+        des.utcTime             = status->utcTime();
+
+        des.position.PantTiltPositionSpace =
+            status->positionPanTiltSpace();
+        des.position.ZoomPositionSpace =
+            status->positionZoomSpace();
+
+        delete status;
+
+        return true;
+    }
     bool loadDefaultPtzConfiguration() {
         auto cfgs = iptzManagement->getConfigurations();
         auto& des = idata.ptz.config;
@@ -995,6 +1019,31 @@ public:
         continuousMove->setZoomX(z);
         iptzManagement->continuousMove(continuousMove);
         delete continuousMove;
+        return true;
+    }
+    bool absoluteMove(const std::map<ONVIF::Axis, float> vls) {
+        ONVIF::AbsoluteMove* absoluteMove = new ONVIF::AbsoluteMove;
+        absoluteMove->setProfileToken(iMediaProfile);
+        if (vls.find(ONVIF::Axis::X) != vls.end())
+        {
+            absoluteMove->setPositionPanTiltX(vls.at(ONVIF::Axis::X));
+            if (idata.ptz.config.defaultAbsolutePantTiltPositionSpace.size())
+                absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsolutePantTiltPositionSpace);
+        }
+        if (vls.find(ONVIF::Axis::Y) != vls.end())
+        {
+            absoluteMove->setPositionPanTiltY(vls.at(ONVIF::Axis::Y));
+            if (idata.ptz.config.defaultAbsolutePantTiltPositionSpace.size())
+                absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsolutePantTiltPositionSpace);
+        }
+        if (vls.find(ONVIF::Axis::Z) != vls.end())
+        {
+            absoluteMove->setPositionZoomX(vls.at(ONVIF::Axis::Z));
+            if (idata.ptz.config.defaultAbsoluteZoomPositionSpace.size())
+                absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsoluteZoomPositionSpace);
+        }
+        iptzManagement->absoluteMove(absoluteMove);
+        delete absoluteMove;
         return true;
     }
     bool stopMovement() {
@@ -1207,6 +1256,11 @@ QOnvifDevice::refreshPtzConfiguration() {
 }
 
 bool
+QOnvifDevice::refreshPtzStatus() {
+    return d_ptr->refreshPtzStatus();
+}
+
+bool
 QOnvifDevice::loadDefaultPtzConfiguration() {
     return d_ptr->loadDefaultPtzConfiguration();
 }
@@ -1239,6 +1293,11 @@ QOnvifDevice::setHomePosition() {
 bool
 QOnvifDevice::continuousMove(const float x, const float y, const float z) {
     return d_ptr->continuousMove(x, y, z);
+}
+
+bool
+QOnvifDevice::absoluteMove(const std::map<ONVIF::Axis, float> vls) {
+    return d_ptr->absoluteMove(vls);
 }
 
 bool

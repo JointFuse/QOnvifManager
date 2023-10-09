@@ -1,32 +1,28 @@
-﻿#ifndef ABSOLUTEMOVE_H
-#define ABSOLUTEMOVE_H
+﻿#ifndef STATUS_H
+#define STATUS_H
 #include <QObject>
 #include <QDomElement>
+#include <QDateTime>
 namespace ONVIF {
-    enum class Axis{
-        X,
-        Y,
-        Z,
-    };
-
-    class AbsoluteMove : public QObject
+    class Status : public QObject
     {
         Q_OBJECT
         Q_PROPERTY(QString profileToken READ profileToken WRITE setProfileToken)
         Q_PROPERTY(float positionPanTiltX READ positionPanTiltX WRITE setPositionPanTiltX)
         Q_PROPERTY(float positionPanTiltY READ positionPanTiltY WRITE setPositionPanTiltY)
+        Q_PROPERTY(bool moveStatusPanTiltX READ moveStatusPanTiltX WRITE setMoveStatusPanTiltX)
+        Q_PROPERTY(bool moveStatusPanTiltY READ moveStatusPanTiltY WRITE setMoveStatusPanTiltY)
         Q_PROPERTY(QString positionPanTiltSpace READ positionPanTiltSpace WRITE setPositionPanTiltSpace)
         Q_PROPERTY(float positionZoomX READ positionZoomX WRITE setPositionZoomX)
+        Q_PROPERTY(bool moveStatusZoomX READ moveStatusZoomX WRITE setMoveStatusZoomX)
         Q_PROPERTY(QString positionZoomSpace READ positionZoomSpace WRITE setPositionZoomSpace)
-        Q_PROPERTY(float speedPanTiltX READ speedPanTiltX WRITE setSpeedPanTiltX)
-        Q_PROPERTY(float speedPanTiltY READ speedPanTiltY WRITE setSpeedPanTiltY)
-        Q_PROPERTY(QString speedPanTiltSpace READ speedPanTiltSpace WRITE speedPanTiltSpace)
-        Q_PROPERTY(float speedZoomX READ speedZoomX WRITE setSpeedZoomX)
-        Q_PROPERTY(QString speedZoomSpace READ speedZoomSpace WRITE setSpeedZoomSpace)
+        Q_PROPERTY(QString error READ error WRITE setError)
+        Q_PROPERTY(QDateTime utcTime READ utcTime WRITE setutcTime)
+
         Q_PROPERTY(bool result READ result WRITE setResult)
     public:
-        explicit AbsoluteMove(QObject *parent = NULL);
-        virtual ~AbsoluteMove();
+        explicit Status(QObject *parent = NULL);
+        virtual ~Status();
         QDomElement toxml();
         QString profileToken() const
         {
@@ -58,34 +54,29 @@ namespace ONVIF {
             return m_positionZoomSpace;
         }
 
-        float speedPanTiltX() const
-        {
-            return m_speedPanTiltX;
-        }
-
-        float speedPanTiltY() const
-        {
-            return m_speedPanTiltY;
-        }
-
-        float speedZoomX() const
-        {
-            return m_speedZoomX;
-        }
-
-        QString speedZoomSpace() const
-        {
-            return m_speedZoomSpace;
-        }
-
         bool result() const
         {
             return m_result;
         }
 
-        QString speedPanTiltSpace() const
-        {
-            return m_speedPanTiltSpace;
+        QDateTime utcTime() const {
+            return m_utcTime;
+        }
+
+        QString error() const {
+            return m_error;
+        }
+
+        bool moveStatusPanTiltX() const {
+            return m_moveStatusPanTiltX;
+        }
+
+        bool moveStatusPanTiltY() const {
+            return m_moveStatusPanTiltY;
+        }
+
+        bool moveStatusZoomX() const {
+            return m_moveStatusZoomX;
         }
 
     public slots:
@@ -97,13 +88,11 @@ namespace ONVIF {
         void setPositionPanTiltX(float arg)
         {
             m_positionPanTiltX = arg;
-            m_x = true;
         }
 
         void setPositionPanTiltY(float arg)
         {
             m_positionPanTiltY = arg;
-            m_y = true;
         }
 
         void setPositionPanTiltSpace(QString arg)
@@ -114,7 +103,6 @@ namespace ONVIF {
         void setPositionZoomX(float arg)
         {
             m_positionZoomX = arg;
-            m_z = true;
         }
 
         void setPositionZoomSpace(QString arg)
@@ -122,34 +110,29 @@ namespace ONVIF {
             m_positionZoomSpace = arg;
         }
 
-        void setSpeedPanTiltX(float arg)
-        {
-            m_speedPanTiltX = arg;
-        }
-
-        void setSpeedPanTiltY(float arg)
-        {
-            m_speedPanTiltY = arg;
-        }
-
-        void setSpeedZoomX(float arg)
-        {
-            m_speedZoomX = arg;
-        }
-
-        void setSpeedZoomSpace(QString arg)
-        {
-            m_speedZoomSpace = arg;
-        }
-
         void setResult(bool arg)
         {
             m_result = arg;
         }
 
-        void speedPanTiltSpace(QString arg)
-        {
-            m_speedPanTiltSpace = arg;
+        void setutcTime(const QDateTime& arg) {
+            m_utcTime = arg;
+        }
+
+        void setError(QString arg) {
+            m_error = arg;
+        }
+
+        void setMoveStatusPanTiltX(bool arg) {
+            m_moveStatusPanTiltX = arg;
+        }
+
+        void setMoveStatusPanTiltY(bool arg) {
+            m_moveStatusPanTiltY = arg;
+        }
+
+        void setMoveStatusZoomX(bool arg) {
+            m_moveStatusZoomX = arg;
         }
 
     private:
@@ -159,13 +142,12 @@ namespace ONVIF {
         QString m_positionPanTiltSpace;
         float m_positionZoomX;
         QString m_positionZoomSpace;
-        float m_speedPanTiltX;
-        float m_speedPanTiltY;
-        float m_speedZoomX;
-        QString m_speedZoomSpace;
+        bool m_moveStatusPanTiltX;
+        bool m_moveStatusPanTiltY;
+        bool m_moveStatusZoomX;
+        QString m_error;
+        QDateTime m_utcTime;
         bool m_result;
-        QString m_speedPanTiltSpace;
-        bool m_x{ false }, m_y{ false }, m_z{ false };
     };
 }
-#endif // ABSOLUTEMOVE_H
+#endif // STATUS_H

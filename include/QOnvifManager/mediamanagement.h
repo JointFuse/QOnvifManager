@@ -1,4 +1,4 @@
-#ifndef MEDIAMANAGEMENT_H
+﻿#ifndef MEDIAMANAGEMENT_H
 #define MEDIAMANAGEMENT_H
 #include "media_management/audioencoderconfiguration.h"
 #include "media_management/audioencoderconfigurationoptions.h"
@@ -33,7 +33,7 @@ public:
     Profile*                          getProfileD1();
     AudioSourceConfigurations*        getAudioSourceConfigurations();
     AudioEncoderConfigurations*       getAudioEncoderConfigurations();
-    VideoSourceConfiguration*         getVideoSourceConfiguration();
+    VideoSourceConfiguration*         getVideoSourceConfiguration(QString name);
     VideoEncoderConfiguration*        getVideoEncoderConfiguration();
     AudioEncoderConfiguration*        getAudioEncoderConfiguration();
     AudioEncoderConfigurationOptions* getAudioEncoderConfigurationOptions();
