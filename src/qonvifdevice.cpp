@@ -898,7 +898,6 @@ public:
         des.position.panTiltY   = status->positionPanTiltY();
         des.position.zoomX      = status->positionZoomX();
         des.moveStatus.panTiltX = status->moveStatusPanTiltX();
-        des.moveStatus.panTiltX = status->moveStatusPanTiltY();
         des.moveStatus.panTiltX = status->moveStatusZoomX();
         des.error               = status->error();
         des.utcTime             = status->utcTime();
@@ -914,6 +913,7 @@ public:
     }
     bool loadDefaultPtzConfiguration() {
         auto cfgs = iptzManagement->getConfigurations();
+        if (cfgs == nullptr) return false;
         auto& des = idata.ptz.config;
 
         if (cfgs->getName                                     ().size()) des.name                                    = cfgs->getName                                     ().front();

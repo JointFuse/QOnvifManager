@@ -159,9 +159,9 @@ namespace ONVIF {
         QString m_positionPanTiltSpace;
         float m_positionZoomX;
         QString m_positionZoomSpace;
-        float m_speedPanTiltX;
-        float m_speedPanTiltY;
-        float m_speedZoomX;
+        float m_speedPanTiltX{ 1 };
+        float m_speedPanTiltY{ 1 };
+        float m_speedZoomX{ 1 };
         QString m_speedZoomSpace;
         bool m_result;
         QString m_speedPanTiltSpace;

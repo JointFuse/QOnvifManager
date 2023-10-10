@@ -338,7 +338,6 @@ struct Data {
             } position;
             struct MoveStatus {
                 bool   panTiltX;
-                bool   panTiltY;
                 bool   zoomX;
             } moveStatus;
             QString error;

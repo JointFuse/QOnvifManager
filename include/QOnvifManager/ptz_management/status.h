@@ -11,7 +11,6 @@ namespace ONVIF {
         Q_PROPERTY(float positionPanTiltX READ positionPanTiltX WRITE setPositionPanTiltX)
         Q_PROPERTY(float positionPanTiltY READ positionPanTiltY WRITE setPositionPanTiltY)
         Q_PROPERTY(bool moveStatusPanTiltX READ moveStatusPanTiltX WRITE setMoveStatusPanTiltX)
-        Q_PROPERTY(bool moveStatusPanTiltY READ moveStatusPanTiltY WRITE setMoveStatusPanTiltY)
         Q_PROPERTY(QString positionPanTiltSpace READ positionPanTiltSpace WRITE setPositionPanTiltSpace)
         Q_PROPERTY(float positionZoomX READ positionZoomX WRITE setPositionZoomX)
         Q_PROPERTY(bool moveStatusZoomX READ moveStatusZoomX WRITE setMoveStatusZoomX)
@@ -71,10 +70,6 @@ namespace ONVIF {
             return m_moveStatusPanTiltX;
         }
 
-        bool moveStatusPanTiltY() const {
-            return m_moveStatusPanTiltY;
-        }
-
         bool moveStatusZoomX() const {
             return m_moveStatusZoomX;
         }
@@ -127,10 +122,6 @@ namespace ONVIF {
             m_moveStatusPanTiltX = arg;
         }
 
-        void setMoveStatusPanTiltY(bool arg) {
-            m_moveStatusPanTiltY = arg;
-        }
-
         void setMoveStatusZoomX(bool arg) {
             m_moveStatusZoomX = arg;
         }
@@ -143,7 +134,6 @@ namespace ONVIF {
         float m_positionZoomX;
         QString m_positionZoomSpace;
         bool m_moveStatusPanTiltX;
-        bool m_moveStatusPanTiltY;
         bool m_moveStatusZoomX;
         QString m_error;
         QDateTime m_utcTime;

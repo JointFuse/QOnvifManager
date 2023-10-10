@@ -1,4 +1,4 @@
-#ifndef ONVIF_MESSAGE_H
+﻿#ifndef ONVIF_MESSAGE_H
 #define ONVIF_MESSAGE_H
 
 #include <QObject>

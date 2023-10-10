@@ -1,5 +1,6 @@
 ﻿#include <QDebug>
 #include <QMessageBox>
+#include <cmath>
 
 #include "mainwindow.hpp"
 #include "qonvifdevice.hpp"
@@ -24,6 +25,34 @@ MainWindow::~MainWindow() {
 }
 
 void
+MainWindow::movePtz(const float x, const float y, const float z) {
+    if (ui->checkBox_absoluteMove->isChecked())
+    {
+        ionvifManager->device(currentDevice())->refreshPtzStatus();
+        auto inf = ionvifManager->device(currentDevice())->data();
+        auto step = ui->doubleSpinBox_moveStep->value();
+        std::map<ONVIF::Axis, float> moves;
+        if (x != 0 || y != 0)
+        {
+            moves[ONVIF::Axis::X] = inf.ptz.status.position.panTiltX + (x == 0 ? 0 : std::copysign(step, x));
+            moves[ONVIF::Axis::Y] = inf.ptz.status.position.panTiltY + (y == 0 ? 0 : std::copysign(step, y));
+        }
+        if (z != 0) moves[ONVIF::Axis::Z] = inf.ptz.status.position.zoomX + std::copysign(step, z);
+        ionvifManager->device(currentDevice())->absoluteMove(moves);
+    }
+    else
+        ionvifManager->device(currentDevice())->continuousMove(x, y, z);
+}
+
+void
+MainWindow::stopMovePtz() {
+    if (ui->checkBox_absoluteMove->isChecked())
+        return;
+    else
+        ionvifManager->device(currentDevice())->stopMovement();
+}
+
+void
 MainWindow::onNewDeviceFinded(QOnvifDevice* _device) {
     ui->cmbDevicesComboBox->addItem(
         _device->data()
@@ -32,6 +61,7 @@ MainWindow::onNewDeviceFinded(QOnvifDevice* _device) {
         _device->data().probeData.endPointAddress);
 
     _device->refreshProfiles();
+    _device->loadDefaultPtzConfiguration();
     auto prfLst = _device->data().profiles.toKenPro;
     if (prfLst.size())
         _device->setMediaProfile(prfLst.first());
@@ -158,48 +188,77 @@ MainWindow::on_btnrefreshPresents_clicked() {
 
 void
 MainWindow::on_btnRight_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(0.5, 0, 0);
+    movePtz(0.5, 0, 0);
 }
 
-void MainWindow::on_btnLeft_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(-0.5, 0, 0);
-}
-
-
-void MainWindow::on_actionStopMovement_triggered() {
-    ionvifManager->device(currentDevice())->stopMovement();
+void
+MainWindow::on_btnLeft_pressed() {
+    movePtz(-0.5, 0, 0);
 }
 
 
-void MainWindow::on_btnUp_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(0, 0.5, 0);
+void
+MainWindow::on_actionStopMovement_triggered() {
+    stopMovePtz();
 }
 
 
-void MainWindow::on_btnDown_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(0, -0.5, 0);
+void
+MainWindow::on_btnUp_pressed() {
+    movePtz(0, 0.5, 0);
 }
 
 
-void MainWindow::on_btnzoomIn_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(0, 0, 0.5);
+void
+MainWindow::on_btnDown_pressed() {
+    movePtz(0, -0.5, 0);
 }
 
 
-void MainWindow::on_btnzoomOut_pressed() {
-    ionvifManager->device(currentDevice())->continuousMove(0, 0, -0.5);
+void
+MainWindow::on_btnzoomIn_pressed() {
+    movePtz(0, 0, 0.5);
 }
 
 
-void MainWindow::on_horizontalSlider_zoom_sliderReleased()
-{
-    ionvifManager->device(currentDevice())->absoluteMove({ {ONVIF::Axis::Z, ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum()} });
+void
+MainWindow::on_btnzoomOut_pressed() {
+    movePtz(0, 0, -0.5);
 }
 
 
-void MainWindow::on_horizontalSlider_zoom_valueChanged(int value)
-{
-    if (ui->horizontalSlider_zoom->isSliderDown()) return;
-    ionvifManager->device(currentDevice())->absoluteMove({ {ONVIF::Axis::Z, value * 1.0 / ui->horizontalSlider_zoom->maximum()} });
+void
+MainWindow::on_horizontalSlider_zoom_sliderReleased() {
+    ionvifManager->device(currentDevice())->absoluteMove(
+        {
+        {
+            ONVIF::Axis::Z,
+            ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum()
+        }
+        }
+    );
+}
+
+
+void
+MainWindow::on_horizontalSlider_zoom_valueChanged(int value) {
+    if (ui->horizontalSlider_zoom->isSliderDown())
+        return;
+    else
+        ionvifManager->device(currentDevice())->absoluteMove(
+            {
+            {
+                ONVIF::Axis::Z,
+                value * 1.0 / ui->horizontalSlider_zoom->maximum()
+            }
+            }
+        );
+}
+
+
+void
+MainWindow::on_actionAbsoluteMoveStepVisibility_triggered() {
+    ui->label_moveStep->setEnabled(ui->checkBox_absoluteMove->isChecked());
+    ui->doubleSpinBox_moveStep->setEnabled(ui->checkBox_absoluteMove->isChecked());
 }
 

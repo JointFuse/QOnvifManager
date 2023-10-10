@@ -22,6 +22,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private:
+    void movePtz(const float x, const float y, const float z);
+    void stopMovePtz();
+
 private slots:
     void onNewDeviceFinded(QOnvifDevice* _device);
 
@@ -44,8 +48,8 @@ private slots:
     void on_btnzoomIn_pressed();
     void on_btnzoomOut_pressed();
     void on_horizontalSlider_zoom_sliderReleased();
-
     void on_horizontalSlider_zoom_valueChanged(int value);
+    void on_actionAbsoluteMoveStepVisibility_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -698,7 +698,7 @@ void PtzManagement::getStatus(Status* status)
     if(result != NULL) {
         QXmlQuery *query = result->query();
         QDomNodeList itemNodeList;
-        QDomNode node1;
+        QDomNode node;
         QDomDocument doc;
         QString value,xml;
         query->setQuery(result->nameSpace()+"doc($inputDocument)//tptz:PTZStatus");
@@ -706,9 +706,43 @@ void PtzManagement::getStatus(Status* status)
         doc.setContent(xml);
         itemNodeList = doc.elementsByTagName("tptz:PTZStatus");
         for(int i=0; i<itemNodeList.size(); i++) {
-            node1= itemNodeList.at(i);
-            value = node1.toElement().attribute("token");
+            node= itemNodeList.at(i);
+            value = node.toElement().attribute("token");
             status->setProfileToken(value.trimmed());
         }
+
+        query->setQuery(result->nameSpace()+"doc($inputDocument)//tt:Position/tt:PanTilt");
+        query->evaluateTo(&xml);
+        doc.setContent(xml);
+        itemNodeList = doc.elementsByTagName("tt:PanTilt");
+        for(int i=0; i<itemNodeList.size(); i++) {
+            node = itemNodeList.at(i);
+            value = node.toElement().attribute("space");
+            status->setPositionPanTiltSpace(value.trimmed());
+            value = node.toElement().attribute("x");
+            status->setPositionPanTiltX(value.trimmed().toFloat());
+            value = node.toElement().attribute("y");
+            status->setPositionPanTiltY(value.trimmed().toFloat());
+        }
+
+        query->setQuery(result->nameSpace()+"doc($inputDocument)//tt:Position/tt:Zoom");
+        query->evaluateTo(&xml);
+        doc.setContent(xml);
+        itemNodeList = doc.elementsByTagName("tt:Zoom");
+        for(int i=0; i<itemNodeList.size(); i++) {
+            node = itemNodeList.at(i);
+            value = node.toElement().attribute("space");
+            status->setPositionZoomSpace(value.trimmed());
+            value = node.toElement().attribute("x");
+            status->setPositionZoomX(value.trimmed().toFloat());
+        }
+
+        status->setMoveStatusPanTiltX(result->getValue("//tt:MoveStatus/tt:PanTilt").trimmed() == "MOVING");
+        status->setMoveStatusZoomX(result->getValue("//tt:MoveStatus/tt:Zoom").trimmed() == "MOVING");
+        status->setutcTime(QDateTime::fromString(result->getValue("//tt:UtcTime").trimmed(), Qt::DateFormat::ISODate));
+        status->setError(result->getValue("//tt:Error").trimmed());
     }
+
+    delete msg;
+    delete result;
 }

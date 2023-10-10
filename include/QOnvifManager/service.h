@@ -1,4 +1,4 @@
-#ifndef ONVIF_SERVICE_H
+﻿#ifndef ONVIF_SERVICE_H
 #define ONVIF_SERVICE_H
 
 #include <QObject>
