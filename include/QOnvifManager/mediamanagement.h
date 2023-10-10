@@ -5,6 +5,7 @@
 #include "media_management/audioencoderconfigurations.h"
 #include "media_management/audiosourceconfigurations.h"
 #include "media_management/imagesetting.h"
+#include "media_management/imagestatus.h"
 #include "media_management/imagesettingoptions.h"
 #include "media_management/profile.h"
 #include "media_management/profiles.h"
@@ -14,6 +15,7 @@
 #include "media_management/videoencoderconfigurations.h"
 #include "media_management/videosourceconfiguration.h"
 #include "media_management/videosourceconfigurations.h"
+#include "media_management/focusmove.h"
 #include "service.h"
 #include <QDateTime>
 
@@ -45,9 +47,12 @@ public:
     StreamUri* getStreamUri(const QString& token);
     ImageSetting* getImageSetting(const QString& token);
     ImageSettingOptions* getImageSettingOptions(const QString& token);
+    ImageStatus* getImageStatus(const QString& token);
 
     void
     setImageSettings(ImageSetting* imageSettings);
+
+    void focusMove(FocusMove* focusMove);
 
 protected:
     Message* newMessage();

@@ -39,6 +39,7 @@ INCLUDEPATH += ../include/QOnvifManager/ptz_management
 SOURCES += \
     devicemanagement.cpp \
     devicesearcher.cpp \
+    media_management/focusmove.cpp \
     qonvifdevice.cpp \
     qonvifmanager.cpp \
     device_management/capabilities.cpp \
@@ -64,6 +65,7 @@ SOURCES += \
     media_management/videoencoderconfigurations.cpp \
     media_management/videosourceconfiguration.cpp \
     media_management/videosourceconfigurations.cpp \
+    media_management/status.cpp \
     ptz_management/absolutemove.cpp \
     ptz_management/configuration.cpp \
     ptz_management/configurations.cpp \
@@ -88,10 +90,12 @@ SOURCES += \
     ptz_management/homeposition.cpp \
     device_management/networkdefaultgateway.cpp \
     media_management/imagesetting.cpp \
+    media_management/imagestatus.cpp \
     media_management/imagesettingoptions.cpp
 
 
 HEADERS += \
+    ../include/QOnvifManager/media_management/focusmove.h \
     ../include/qonvifdevice.hpp \
     ../include/qonvifmanager.hpp \
     ../include/QOnvifManager/devicesearcher.h \
@@ -119,6 +123,7 @@ HEADERS += \
     ../include/QOnvifManager/media_management/videoencoderconfigurations.h \
     ../include/QOnvifManager/media_management/videosourceconfiguration.h \
     ../include/QOnvifManager/media_management/videosourceconfigurations.h \
+    ../include/QOnvifManager/media_management/status.h \
     ../include/QOnvifManager/ptz_management/absolutemove.h \
     ../include/QOnvifManager/ptz_management/configuration.h \
     ../include/QOnvifManager/ptz_management/configurations.h \
@@ -144,7 +149,7 @@ HEADERS += \
     ../include/QOnvifManager/ptz_management/homeposition.h \
     ../include/QOnvifManager/device_management/networkdefaultgateway.h \
     ../include/QOnvifManager/media_management/imagesetting.h \
-    media_management/imagesettingoptions.h \
+    ../include/QOnvifManager/media_management/imagestatus.h \
     ../include/QOnvifManager/media_management/imagesettingoptions.h
 
 

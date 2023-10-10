@@ -483,6 +483,42 @@ public:
         return true;
     }
 
+    bool refreshImageStatus() {
+        ONVIF::ImageStatus* imageStatus =
+                imediaManagement->getImageStatus(iMediaProfile);
+        auto& des = idata.mediaConfig.imageStatus;
+
+        des.moveStatus = (ONVIF::MoveStatus)imageStatus->moveStatus();
+        des.position = imageStatus->position();
+        des.error = imageStatus->position();
+
+        bool res = imageStatus->result();
+        delete imageStatus;
+        return res;
+    }
+
+    bool focusAbsoluteMove(float position) {
+        ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
+        focusMove->setMoveType(ONVIF::MoveType::Absolute);
+        focusMove->setPosition(position);
+        focusMove->setVideoSourceToken(iMediaProfile);
+        imediaManagement->focusMove(focusMove);
+        bool res = focusMove->result();
+        delete focusMove;
+        return res;
+    }
+
+    bool focusContinuousMove(float speed) {
+        ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
+        focusMove->setMoveType(ONVIF::MoveType::Continuous);
+        focusMove->setSpeed(speed);
+        focusMove->setVideoSourceToken(iMediaProfile);
+        imediaManagement->focusMove(focusMove);
+        bool res = focusMove->result();
+        delete focusMove;
+        return res;
+    }
+
     bool refreshProfiles() {
         QScopedPointer<ONVIF::Profiles> profiles(
             imediaManagement->getProfiles());
@@ -1203,6 +1239,21 @@ QOnvifDevice::refreshStreamUris() {
 bool
 QOnvifDevice::refreshAudioConfigs() {
     return d_ptr->refreshAudioConfigs();
+}
+
+bool
+QOnvifDevice::refreshImageStatus() {
+    return d_ptr->refreshImageStatus();
+}
+
+bool
+QOnvifDevice::focusAbsoluteMove(float position) {
+    return d_ptr->focusAbsoluteMove(position);
+}
+
+bool
+QOnvifDevice::focusContinuousMove(float speed) {
+    return d_ptr->focusContinuousMove(speed);
 }
 
 bool

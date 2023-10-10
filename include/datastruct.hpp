@@ -5,6 +5,14 @@
 #include <QRect>
 #include <QString>
 
+namespace ONVIF {
+enum MoveStatus {
+    IDLE,
+    MOVING,
+    UNKNOWN,
+};
+}
+
 struct Data {
     struct ProbeData {
         QString endPointAddress;
@@ -208,6 +216,12 @@ struct Data {
                 double exposureIrisMin;
             } options;
         } imageSetting;
+
+        struct ImageStatus {
+            float position;
+            ONVIF::MoveStatus moveStatus;
+            QString error;
+        } imageStatus;
 
         struct Video {
             struct StreamUri {

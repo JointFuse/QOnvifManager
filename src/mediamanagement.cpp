@@ -1,5 +1,6 @@
 ﻿#include "mediamanagement.h"
 #include "messageparser.h"
+#include "datastruct.hpp"
 #include <QDebug>
 #include <QXmlResultItems>
 using namespace ONVIF;
@@ -2390,6 +2391,36 @@ MediaManagement::getImageSettingOptions(const QString& token) {
     return imageSettingOptions;
 }
 
+ImageStatus*
+MediaManagement::getImageStatus(const QString& token) {
+    ImageStatus* imageStatus = new ImageStatus();
+    imageStatus->setToken(token);
+    Message*     msg = newMessage();
+    msg->appendToBody(imageStatus->toxml());
+    MessageParser* result = sendMessage(msg);
+    if (result != NULL) {
+        if (result->find("//timg:GetStatusResponse"))
+            imageStatus->setResult(true);
+        else
+            imageStatus->setResult(false);
+
+        imageStatus->setPosition(result->getValue("//tt:FocusStatus20/tt:Position").trimmed().toFloat());
+
+        auto moveStatus = result->getValue("//tt:FocusStatus20/tt:MoveStatus").trimmed();
+        if (moveStatus == "MOVING")
+            imageStatus->setMoveStatus(ONVIF::MoveStatus::MOVING);
+        if (moveStatus == "IDLE")
+            imageStatus->setMoveStatus(ONVIF::MoveStatus::IDLE);
+        if (moveStatus == "UNKNOWN")
+            imageStatus->setMoveStatus(ONVIF::MoveStatus::UNKNOWN);
+
+        imageStatus->setError(result->getValue("//tt:Error").trimmed());
+    }
+    delete result;
+    delete msg;
+    return imageStatus;
+}
+
 void
 MediaManagement::setImageSettings(ImageSetting* imageSettings) {
     Message* msg = newMessage();
@@ -2405,5 +2436,20 @@ MediaManagement::setImageSettings(ImageSetting* imageSettings) {
             imageSettings->setResult(false);
         delete result;
         delete msg;
+    }
+}
+
+void
+MediaManagement::focusMove(FocusMove* focusMove) {
+    Message *msg = newMessage();
+    msg->appendToBody(focusMove->toxml());
+    MessageParser *result = sendMessage(msg);
+    if(result != NULL) {
+        if(result->find("//timg:MoveResponse"))
+            focusMove->setResult(true);
+        else
+            focusMove->setResult(false);
+        delete msg;
+        delete result;
     }
 }
