@@ -98,6 +98,7 @@ MediaManagement::newMessage() {
     names.insert("tt", "http://www.onvif.org/ver10/schema");
     names.insert("trt", "http://www.onvif.org/ver10/media/wsdl");
     names.insert("sch", "http://www.onvif.org/ver10/schema");
+    names.insert("timg", "http://www.onvif.org/ver20/imaging/wsdl");
     return createMessage(names);
 }
 VideoSourceConfigurations*
@@ -150,8 +151,8 @@ MediaManagement::getVideoSourceConfigurations() {
             videoSourceConfigurations->setBounds(rect);
             item = items.next();
         }
+        delete result;
     }
-    delete result;
     delete msg;
     return videoSourceConfigurations;
 }
@@ -290,8 +291,8 @@ MediaManagement::getVideoEncoderConfigurations() {
                 autoStart.trimmed() == "true" ? true : false);
             item = items.next();
         }
+        delete result;
     }
-    delete result;
     delete msg;
     return videoEncoderConfigurations;
 }
@@ -745,9 +746,9 @@ MediaManagement::getProfiles() {
 
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return profiles;
 }
 
@@ -1200,9 +1201,9 @@ MediaManagement::getProfile720P() {
 
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return profile;
 }
 
@@ -1656,9 +1657,9 @@ MediaManagement::getProfileD1() {
 
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return profile;
 }
 
@@ -1702,10 +1703,10 @@ MediaManagement::getAudioSourceConfigurations() {
             audioSourceConfigurations->setSourceToken(value.trimmed());
             item = items.next();
         }
+        delete result;
     }
 
     delete msg;
-    delete result;
     return audioSourceConfigurations;
 }
 
@@ -1799,9 +1800,9 @@ MediaManagement::getAudioEncoderConfigurations() {
             audioEncoderConfigurations->setSessionTimeout(value.trimmed());
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return audioEncoderConfigurations;
 }
 
@@ -1854,9 +1855,9 @@ MediaManagement::getVideoSourceConfiguration(QString name) {
             rect.setTop(value.trimmed().toInt());
         }
         videoSourceConfiguration->setBounds(rect);
+        delete result;
     }
     delete msg;
-    delete result;
     return videoSourceConfiguration;
 }
 
@@ -1933,10 +1934,10 @@ MediaManagement::getVideoEncoderConfiguration() {
                                                                       : false);
         videoEncoderConfiguration->setSessionTimeout(
             result->getValue("//tt:SessionTimeout").trimmed());
+        delete result;
     }
 
     delete msg;
-    delete result;
     return videoEncoderConfiguration;
 }
 
@@ -1995,9 +1996,9 @@ MediaManagement::getAudioEncoderConfiguration() {
                 : false);
         audioEncoderConfiguration->setSessionTimeout(
             result->getValue("//tt:SessionTimeout").trimmed());
+        delete result;
     }
     delete msg;
-    delete result;
     return audioEncoderConfiguration;
 }
 
@@ -2058,10 +2059,10 @@ MediaManagement::getAudioEncoderConfigurationOptions() {
             audioEncoderConfigurationOptions->setSampleRateList(sampleRateList);
             item = items.next();
         }
+        delete result;
     }
 
     delete msg;
-    delete result;
     return audioEncoderConfigurationOptions;
 }
 
@@ -2204,10 +2205,10 @@ MediaManagement::getVideoEncoderConfigurationOptions(
                     value.trimmed()));
             item = items.next();
         }
+        delete result;
     }
 
     delete msg;
-    delete result;
     return videoEncoderConfigurationOptions;
 }
 
@@ -2226,8 +2227,8 @@ MediaManagement::setVideoEncoderConfiguration(
         else
             videoConfigurations->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 StreamUri*
@@ -2266,9 +2267,9 @@ MediaManagement::getStreamUri(const QString& token) {
                 ? true
                 : false);
         streamUri->setTimeout(result->getValue("//tt:Timeout").trimmed());
+        delete result;
     }
     delete msg;
-    delete result;
     return streamUri;
 }
 
@@ -2309,7 +2310,7 @@ MediaManagement::getImageSetting(const QString& token) {
         imageSetting->setExposureIris(
             result->getValue("//timg:ImagingSettings/tt:Exposure/tt:Iris")
                 .toInt());
-        imageSetting->setExposureManual(
+        imageSetting->setAutofocusManual(
             result->getValue(
                 "//timg:ImagingSettings/tt:Focus/tt:AutoFocusMode") == "MANUAL"
                 ? true
@@ -2317,8 +2318,8 @@ MediaManagement::getImageSetting(const QString& token) {
         imageSetting->setDefaultSpeed(
             result->getValue("//timg:ImagingSettings/tt:Focus/tt:DefaultSpeed")
                 .toInt());
+        delete result;
     }
-    delete result;
     delete msg;
     return imageSetting;
 }
@@ -2385,8 +2386,8 @@ MediaManagement::getImageSettingOptions(const QString& token) {
                 ->getValue(
                     "//timg:ImagingOptions/tt:Focus/tt:DefaultSpeed/tt:Max")
                 .toDouble());
+        delete result;
     }
-    delete result;
     delete msg;
     return imageSettingOptions;
 }
@@ -2415,8 +2416,8 @@ MediaManagement::getImageStatus(const QString& token) {
             imageStatus->setMoveStatus(ONVIF::MoveStatus::UNKNOWN);
 
         imageStatus->setError(result->getValue("//tt:Error").trimmed());
+        delete result;
     }
-    delete result;
     delete msg;
     return imageStatus;
 }
@@ -2435,8 +2436,8 @@ MediaManagement::setImageSettings(ImageSetting* imageSettings) {
         else
             imageSettings->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -2445,11 +2446,12 @@ MediaManagement::focusMove(FocusMove* focusMove) {
     msg->appendToBody(focusMove->toxml());
     MessageParser *result = sendMessage(msg);
     if(result != NULL) {
-        if(result->find("//timg:MoveResponse"))
+        if(result->find("//timg:MoveResponse") ||
+           result->find("//timg:StopResponse"))
             focusMove->setResult(true);
         else
             focusMove->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }

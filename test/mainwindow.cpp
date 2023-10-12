@@ -122,6 +122,7 @@ MainWindow::on_btnRefreshData_clicked() {
     auto device = ionvifManager->device(currentDevice());
     device->loadDefaultPtzConfiguration();
     device->refreshPtzStatus();
+    device->refreshImageStatus();
     Q_UNUSED(device)
 
     // <- add a breake point here to see device informations in debuger.
@@ -260,5 +261,29 @@ void
 MainWindow::on_actionAbsoluteMoveStepVisibility_triggered() {
     ui->label_moveStep->setEnabled(ui->checkBox_absoluteMove->isChecked());
     ui->doubleSpinBox_moveStep->setEnabled(ui->checkBox_absoluteMove->isChecked());
+}
+
+
+void MainWindow::on_pushButton_focusIn_pressed()
+{
+    ionvifManager->device(currentDevice())->focusContinuousMove(1);
+}
+
+
+void MainWindow::on_pushButton_focusOut_pressed()
+{
+    ionvifManager->device(currentDevice())->focusContinuousMove(-1);
+}
+
+
+void MainWindow::on_pushButton_focusOut_released()
+{
+    ionvifManager->device(currentDevice())->focusStopMove();
+}
+
+
+void MainWindow::on_pushButton_focusIn_released()
+{
+    ionvifManager->device(currentDevice())->focusStopMove();
 }
 

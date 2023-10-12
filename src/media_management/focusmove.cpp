@@ -14,9 +14,8 @@ FocusMove::~FocusMove()
 
 QDomElement FocusMove::toxml()
 {
-    QDomElement move = newElement("timg:Move");
+    QDomElement move;
     QDomElement videoSourceToken = newElement("timg:VideoSourceToken",this->videoSourceToken());
-    QDomElement focus = newElement("timg:Focus");
     QDomElement moveType;
 
     switch(m_moveType) {
@@ -28,21 +27,28 @@ QDomElement FocusMove::toxml()
         moveType.appendChild(position);
         break;
     }
-    case MoveType::Continuous:
+    case MoveType::Relative:
     {
-        moveType = newElement("timg:Continuous");
+        moveType = newElement("timg:Relative");
         QDomElement distance = newElement("timg:Distance");
         distance.setAttribute("x", this->position());
         moveType.appendChild(distance);
         break;
     }
-    case MoveType::Relative:
-        moveType = newElement("timg:Relative");
+    case MoveType::Continuous:
+        moveType = newElement("timg:Continuous");
         break;
+    case MoveType::Stop:
+        move = newElement("timg:Stop");
+        move.appendChild(videoSourceToken);
+        /* this section shorter then whole method */
+        return move;
     default:
         break;
     }
 
+    move = newElement("timg:Move");
+    QDomElement focus = newElement("timg:Focus");
     QDomElement speed = newElement("timg:Speed");
     speed.setAttribute("x", this->speed());
     moveType.appendChild(speed);

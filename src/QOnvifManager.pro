@@ -65,7 +65,6 @@ SOURCES += \
     media_management/videoencoderconfigurations.cpp \
     media_management/videosourceconfiguration.cpp \
     media_management/videosourceconfigurations.cpp \
-    media_management/status.cpp \
     ptz_management/absolutemove.cpp \
     ptz_management/configuration.cpp \
     ptz_management/configurations.cpp \
@@ -123,7 +122,6 @@ HEADERS += \
     ../include/QOnvifManager/media_management/videoencoderconfigurations.h \
     ../include/QOnvifManager/media_management/videosourceconfiguration.h \
     ../include/QOnvifManager/media_management/videosourceconfigurations.h \
-    ../include/QOnvifManager/media_management/status.h \
     ../include/QOnvifManager/ptz_management/absolutemove.h \
     ../include/QOnvifManager/ptz_management/configuration.h \
     ../include/QOnvifManager/ptz_management/configurations.h \

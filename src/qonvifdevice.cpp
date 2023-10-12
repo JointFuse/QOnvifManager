@@ -119,7 +119,10 @@ public:
         imageSetting.setExposureManual(_imageSetting.exposureManual);
         imageSetting.setForcePersistence(_imageSetting.forcePersistence);
         imageSetting.setSharpness(_imageSetting.sharpness);
-        imageSetting.setToken(_imageSetting.token);
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            imageSetting.setToken(idata.mediaConfig.video.sourceConfig.sourceToken.first());
+        else
+            imageSetting.setToken(_imageSetting.token);
         imediaManagement->setImageSettings(&imageSetting);
         return imageSetting.result();
     }
@@ -484,8 +487,10 @@ public:
     }
 
     bool refreshImageStatus() {
-        ONVIF::ImageStatus* imageStatus =
-                imediaManagement->getImageStatus(iMediaProfile);
+        QString sourceToken;
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            sourceToken = idata.mediaConfig.video.sourceConfig.sourceToken.first();
+        ONVIF::ImageStatus* imageStatus = imediaManagement->getImageStatus(sourceToken);
         auto& des = idata.mediaConfig.imageStatus;
 
         des.moveStatus = (ONVIF::MoveStatus)imageStatus->moveStatus();
@@ -501,7 +506,9 @@ public:
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
         focusMove->setMoveType(ONVIF::MoveType::Absolute);
         focusMove->setPosition(position);
-        focusMove->setVideoSourceToken(iMediaProfile);
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            focusMove->setVideoSourceToken(
+                        idata.mediaConfig.video.sourceConfig.sourceToken.first());
         imediaManagement->focusMove(focusMove);
         bool res = focusMove->result();
         delete focusMove;
@@ -512,7 +519,21 @@ public:
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
         focusMove->setMoveType(ONVIF::MoveType::Continuous);
         focusMove->setSpeed(speed);
-        focusMove->setVideoSourceToken(iMediaProfile);
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            focusMove->setVideoSourceToken(
+                idata.mediaConfig.video.sourceConfig.sourceToken.first());
+        imediaManagement->focusMove(focusMove);
+        bool res = focusMove->result();
+        delete focusMove;
+        return res;
+    }
+
+    bool focusStopMove() {
+        ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
+        focusMove->setMoveType(ONVIF::MoveType::Stop);
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            focusMove->setVideoSourceToken(
+                idata.mediaConfig.video.sourceConfig.sourceToken.first());
         imediaManagement->focusMove(focusMove);
         bool res = focusMove->result();
         delete focusMove;
@@ -1254,6 +1275,11 @@ QOnvifDevice::focusAbsoluteMove(float position) {
 bool
 QOnvifDevice::focusContinuousMove(float speed) {
     return d_ptr->focusContinuousMove(speed);
+}
+
+bool
+QOnvifDevice::focusStopMove() {
+    return d_prt->focusStopMove();
 }
 
 bool

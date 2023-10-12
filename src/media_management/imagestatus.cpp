@@ -1,4 +1,4 @@
-#include "imagestatus.h"
+﻿#include "imagestatus.h"
 #include "message.h"
 using namespace ONVIF;
 
@@ -8,6 +8,7 @@ QDomElement
 ImageStatus::toxml() {
     QDomElement imageStatus = newElement("timg:GetStatus");
     QDomElement videoSourceToken = newElement("timg:VideoSourceToken", this->token());
+    imageStatus.appendChild(videoSourceToken);
     return imageStatus;
 }
 

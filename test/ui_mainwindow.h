@@ -82,17 +82,19 @@ public:
     QPushButton *btngoHome;
     QSpacerItem *horizontalSpacer_3;
     QGridLayout *gridLayout_2;
-    QPushButton *btnLeft;
-    QLabel *label_moveStep;
-    QPushButton *btnDown;
     QPushButton *btnzoomOut;
-    QPushButton *btnUp;
-    QDoubleSpinBox *doubleSpinBox_moveStep;
-    QCheckBox *checkBox_absoluteMove;
-    QPushButton *btnRight;
     QPushButton *btnzoomIn;
-    QSlider *horizontalSlider_zoom;
+    QPushButton *btnDown;
+    QPushButton *btnRight;
+    QPushButton *btnLeft;
     QLabel *label_15;
+    QLabel *label_moveStep;
+    QDoubleSpinBox *doubleSpinBox_moveStep;
+    QSlider *horizontalSlider_zoom;
+    QCheckBox *checkBox_absoluteMove;
+    QPushButton *btnUp;
+    QPushButton *pushButton_focusIn;
+    QPushButton *pushButton_focusOut;
     QSpacerItem *horizontalSpacer_2;
     QVBoxLayout *verticalLayout_2;
     QComboBox *cbxPresents;
@@ -348,10 +350,36 @@ public:
         gridLayout_2 = new QGridLayout();
         gridLayout_2->setSpacing(6);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
+        btnzoomOut = new QPushButton(centralWidget);
+        btnzoomOut->setObjectName(QString::fromUtf8("btnzoomOut"));
+
+        gridLayout_2->addWidget(btnzoomOut, 2, 4, 1, 1);
+
+        btnzoomIn = new QPushButton(centralWidget);
+        btnzoomIn->setObjectName(QString::fromUtf8("btnzoomIn"));
+
+        gridLayout_2->addWidget(btnzoomIn, 2, 2, 1, 1);
+
+        btnDown = new QPushButton(centralWidget);
+        btnDown->setObjectName(QString::fromUtf8("btnDown"));
+
+        gridLayout_2->addWidget(btnDown, 2, 3, 1, 1);
+
+        btnRight = new QPushButton(centralWidget);
+        btnRight->setObjectName(QString::fromUtf8("btnRight"));
+
+        gridLayout_2->addWidget(btnRight, 1, 4, 1, 1);
+
         btnLeft = new QPushButton(centralWidget);
         btnLeft->setObjectName(QString::fromUtf8("btnLeft"));
 
         gridLayout_2->addWidget(btnLeft, 1, 2, 1, 1);
+
+        label_15 = new QLabel(centralWidget);
+        label_15->setObjectName(QString::fromUtf8("label_15"));
+        label_15->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        gridLayout_2->addWidget(label_15, 2, 0, 1, 1);
 
         label_moveStep = new QLabel(centralWidget);
         label_moveStep->setObjectName(QString::fromUtf8("label_moveStep"));
@@ -359,21 +387,6 @@ public:
         label_moveStep->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_2->addWidget(label_moveStep, 1, 0, 1, 1);
-
-        btnDown = new QPushButton(centralWidget);
-        btnDown->setObjectName(QString::fromUtf8("btnDown"));
-
-        gridLayout_2->addWidget(btnDown, 2, 3, 1, 1);
-
-        btnzoomOut = new QPushButton(centralWidget);
-        btnzoomOut->setObjectName(QString::fromUtf8("btnzoomOut"));
-
-        gridLayout_2->addWidget(btnzoomOut, 2, 4, 1, 1);
-
-        btnUp = new QPushButton(centralWidget);
-        btnUp->setObjectName(QString::fromUtf8("btnUp"));
-
-        gridLayout_2->addWidget(btnUp, 0, 3, 1, 1);
 
         doubleSpinBox_moveStep = new QDoubleSpinBox(centralWidget);
         doubleSpinBox_moveStep->setObjectName(QString::fromUtf8("doubleSpinBox_moveStep"));
@@ -384,21 +397,6 @@ public:
         doubleSpinBox_moveStep->setValue(0.100000000000000);
 
         gridLayout_2->addWidget(doubleSpinBox_moveStep, 1, 1, 1, 1);
-
-        checkBox_absoluteMove = new QCheckBox(centralWidget);
-        checkBox_absoluteMove->setObjectName(QString::fromUtf8("checkBox_absoluteMove"));
-
-        gridLayout_2->addWidget(checkBox_absoluteMove, 0, 0, 1, 2);
-
-        btnRight = new QPushButton(centralWidget);
-        btnRight->setObjectName(QString::fromUtf8("btnRight"));
-
-        gridLayout_2->addWidget(btnRight, 1, 4, 1, 1);
-
-        btnzoomIn = new QPushButton(centralWidget);
-        btnzoomIn->setObjectName(QString::fromUtf8("btnzoomIn"));
-
-        gridLayout_2->addWidget(btnzoomIn, 2, 2, 1, 1);
 
         horizontalSlider_zoom = new QSlider(centralWidget);
         horizontalSlider_zoom->setObjectName(QString::fromUtf8("horizontalSlider_zoom"));
@@ -412,11 +410,25 @@ public:
 
         gridLayout_2->addWidget(horizontalSlider_zoom, 2, 1, 1, 1);
 
-        label_15 = new QLabel(centralWidget);
-        label_15->setObjectName(QString::fromUtf8("label_15"));
-        label_15->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        checkBox_absoluteMove = new QCheckBox(centralWidget);
+        checkBox_absoluteMove->setObjectName(QString::fromUtf8("checkBox_absoluteMove"));
 
-        gridLayout_2->addWidget(label_15, 2, 0, 1, 1);
+        gridLayout_2->addWidget(checkBox_absoluteMove, 0, 0, 1, 2);
+
+        btnUp = new QPushButton(centralWidget);
+        btnUp->setObjectName(QString::fromUtf8("btnUp"));
+
+        gridLayout_2->addWidget(btnUp, 0, 3, 1, 1);
+
+        pushButton_focusIn = new QPushButton(centralWidget);
+        pushButton_focusIn->setObjectName(QString::fromUtf8("pushButton_focusIn"));
+
+        gridLayout_2->addWidget(pushButton_focusIn, 0, 2, 1, 1);
+
+        pushButton_focusOut = new QPushButton(centralWidget);
+        pushButton_focusOut->setObjectName(QString::fromUtf8("pushButton_focusOut"));
+
+        gridLayout_2->addWidget(pushButton_focusOut, 0, 4, 1, 1);
 
 
         horizontalLayout_7->addLayout(gridLayout_2);
@@ -514,15 +526,17 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "Date and Time:", nullptr));
         btnsetHome->setText(QCoreApplication::translate("MainWindow", "setHome", nullptr));
         btngoHome->setText(QCoreApplication::translate("MainWindow", "goHome", nullptr));
-        btnLeft->setText(QCoreApplication::translate("MainWindow", "left", nullptr));
-        label_moveStep->setText(QCoreApplication::translate("MainWindow", "Step:", nullptr));
-        btnDown->setText(QCoreApplication::translate("MainWindow", "down", nullptr));
         btnzoomOut->setText(QCoreApplication::translate("MainWindow", "zoomOut", nullptr));
-        btnUp->setText(QCoreApplication::translate("MainWindow", "up", nullptr));
-        checkBox_absoluteMove->setText(QCoreApplication::translate("MainWindow", "Absolute move", nullptr));
-        btnRight->setText(QCoreApplication::translate("MainWindow", "right", nullptr));
         btnzoomIn->setText(QCoreApplication::translate("MainWindow", "zoomIn", nullptr));
+        btnDown->setText(QCoreApplication::translate("MainWindow", "down", nullptr));
+        btnRight->setText(QCoreApplication::translate("MainWindow", "right", nullptr));
+        btnLeft->setText(QCoreApplication::translate("MainWindow", "left", nullptr));
         label_15->setText(QCoreApplication::translate("MainWindow", "Zoom:", nullptr));
+        label_moveStep->setText(QCoreApplication::translate("MainWindow", "Step:", nullptr));
+        checkBox_absoluteMove->setText(QCoreApplication::translate("MainWindow", "Absolute move", nullptr));
+        btnUp->setText(QCoreApplication::translate("MainWindow", "up", nullptr));
+        pushButton_focusIn->setText(QCoreApplication::translate("MainWindow", "focusIn", nullptr));
+        pushButton_focusOut->setText(QCoreApplication::translate("MainWindow", "focusOut", nullptr));
         btnrefreshPresents->setText(QCoreApplication::translate("MainWindow", "refres presents", nullptr));
         btnsetPresent->setText(QCoreApplication::translate("MainWindow", "set present", nullptr));
         btngoPresent->setText(QCoreApplication::translate("MainWindow", "go present", nullptr));

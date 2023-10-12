@@ -1,4 +1,4 @@
-#ifndef FOCUSMOVE_H
+﻿#ifndef FOCUSMOVE_H
 #define FOCUSMOVE_H
 #include <QObject>
 #include <QDomElement>
@@ -7,6 +7,7 @@ namespace ONVIF {
         Absolute,
         Continuous,
         Relative,
+        Stop,
     };
 
     class FocusMove : public QObject

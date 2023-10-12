@@ -50,6 +50,10 @@ private slots:
     void on_horizontalSlider_zoom_sliderReleased();
     void on_horizontalSlider_zoom_valueChanged(int value);
     void on_actionAbsoluteMoveStepVisibility_triggered();
+    void on_pushButton_focusIn_pressed();
+    void on_pushButton_focusOut_pressed();
+    void on_pushButton_focusOut_released();
+    void on_pushButton_focusIn_released();
 
 private:
     Ui::MainWindow *ui;

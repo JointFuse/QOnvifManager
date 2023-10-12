@@ -72,8 +72,10 @@ public:
     bool refreshStreamUris();
     bool refreshAudioConfigs();
     bool refreshImageStatus();
+
     bool focusAbsoluteMove(float position);
     bool focusContinuousMove(float speed);
+    bool focusStopMove();
 
     // ptz management
     bool refreshPtzConfiguration();

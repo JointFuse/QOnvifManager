@@ -80,3 +80,4 @@ xbin/
 
 #---------
 .qtc_clangd
+test/ui_mainwindow.h
