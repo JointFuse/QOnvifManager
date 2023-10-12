@@ -223,6 +223,19 @@ struct Data {
             QString error;
         } imageStatus;
 
+        struct MoveOptions {
+            float absolutePositionMin;
+            float relativeDistanceMin;
+            float absoluteSpeedMin;
+            float relativeSpeedMin;
+            float continuousSpeedMin;
+            float absolutePositionMax;
+            float relativeDistanceMax;
+            float absoluteSpeedMax;
+            float relativeSpeedMax;
+            float continuousSpeedMax;
+        } moveOptions;
+
         struct Video {
             struct StreamUri {
                 QString uri;

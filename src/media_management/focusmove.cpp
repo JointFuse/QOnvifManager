@@ -18,7 +18,7 @@ QDomElement FocusMove::toxml()
     QDomElement videoSourceToken = newElement("timg:VideoSourceToken",this->videoSourceToken());
     QDomElement moveType;
 
-    switch(m_moveType) {
+    switch((MoveType)m_moveType) {
     case MoveType::Absolute:
     {
         moveType = newElement("timg:Absolute");

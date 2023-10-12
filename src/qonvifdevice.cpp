@@ -504,7 +504,7 @@ public:
 
     bool focusAbsoluteMove(float position) {
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
-        focusMove->setMoveType(ONVIF::MoveType::Absolute);
+        focusMove->setMoveType((int)ONVIF::MoveType::Absolute);
         focusMove->setPosition(position);
         if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
             focusMove->setVideoSourceToken(
@@ -517,7 +517,7 @@ public:
 
     bool focusContinuousMove(float speed) {
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
-        focusMove->setMoveType(ONVIF::MoveType::Continuous);
+        focusMove->setMoveType((int)ONVIF::MoveType::Continuous);
         focusMove->setSpeed(speed);
         if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
             focusMove->setVideoSourceToken(
@@ -530,7 +530,7 @@ public:
 
     bool focusStopMove() {
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
-        focusMove->setMoveType(ONVIF::MoveType::Stop);
+        focusMove->setMoveType((int)ONVIF::MoveType::Stop);
         if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
             focusMove->setVideoSourceToken(
                 idata.mediaConfig.video.sourceConfig.sourceToken.first());
@@ -1129,8 +1129,8 @@ QOnvifDevice::QOnvifDevice(
     QString  _userName,
     QString  _password,
     QObject* _parent)
-    : d_ptr{new QOnvifDevicePrivate{_serviceAddress, _userName, _password}},
-      QObject(_parent) {}
+    : QObject(_parent)
+    , d_ptr{new QOnvifDevicePrivate{_serviceAddress, _userName, _password}} {}
 
 QOnvifDevice::~QOnvifDevice() {}
 
@@ -1279,7 +1279,7 @@ QOnvifDevice::focusContinuousMove(float speed) {
 
 bool
 QOnvifDevice::focusStopMove() {
-    return d_prt->focusStopMove();
+    return d_ptr->focusStopMove();
 }
 
 bool

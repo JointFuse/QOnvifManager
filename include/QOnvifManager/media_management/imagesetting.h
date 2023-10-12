@@ -7,7 +7,6 @@ namespace ONVIF {
 class ImageSetting : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int brightness READ brightness WRITE setBrightness)
     Q_PROPERTY(
             int colorSaturation READ colorSaturation WRITE setColorSaturation)
     Q_PROPERTY(int contrast READ contrast WRITE setContrast)

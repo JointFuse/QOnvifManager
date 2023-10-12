@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QDomElement>
 namespace ONVIF {
-    enum MoveType {
+    enum class MoveType {
         Absolute,
         Continuous,
         Relative,
