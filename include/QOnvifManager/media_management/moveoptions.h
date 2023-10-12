@@ -118,16 +118,16 @@ public:
     }
 
 private:
-    float m_absolutePositionMin{ 0 };
-    float m_relativeDistanceMin{ 0 };
-    float m_absoluteSpeedMin{ 0 };
-    float m_relativeSpeedMin{ 0 };
-    float m_continuousSpeedMin{ 0 };
-    float m_absolutePositionMax{ 0 };
-    float m_relativeDistanceMax{ 0 };
-    float m_absoluteSpeedMax{ 0 };
-    float m_relativeSpeedMax{ 0 };
-    float m_continuousSpeedMax{ 0 };
+    float m_absolutePositionMin;
+    float m_relativeDistanceMin;
+    float m_absoluteSpeedMin;
+    float m_relativeSpeedMin;
+    float m_continuousSpeedMin;
+    float m_absolutePositionMax;
+    float m_relativeDistanceMax;
+    float m_absoluteSpeedMax;
+    float m_relativeSpeedMax;
+    float m_continuousSpeedMax;
     QString m_token;
     bool m_result;
 };

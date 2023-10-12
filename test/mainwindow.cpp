@@ -123,6 +123,7 @@ MainWindow::on_btnRefreshData_clicked() {
     device->loadDefaultPtzConfiguration();
     device->refreshPtzStatus();
     device->refreshImageStatus();
+    device->refreshFocusMoveOptions();
     Q_UNUSED(device)
 
     // <- add a breake point here to see device informations in debuger.

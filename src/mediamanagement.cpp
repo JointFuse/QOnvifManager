@@ -2422,6 +2422,33 @@ MediaManagement::getImageStatus(const QString& token) {
     return imageStatus;
 }
 
+MoveOptions*
+MediaManagement::getFocusMoveOptions(const QString& token) {
+    MoveOptions* opt = new MoveOptions;
+    opt->setToken(token);
+    Message* msg = newMessage();
+    msg->appendToBody(opt->toxml());
+    MessageParser* result = sendMessage(msg);
+    if (result != NULL)
+    {
+        if (result->find("//tt:Absolute/tt:Position/tt:Min"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Absolute/tt:Position/tt:Min").trimmed().toFloat());
+        if (result->find("//tt:Absolute/tt:Position/tt:Max"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Absolute/tt:Position/tt:Max").trimmed().toFloat());
+        if (result->find("//tt:Relative/tt:Distance/tt:Min"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Relative/tt:Distance/tt:Min").trimmed().toFloat());
+        if (result->find("//tt:Relative/tt:Distance/tt:Max"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Relative/tt:Distance/tt:Max").trimmed().toFloat());
+        if (result->find("//tt:Continuous/tt:Speed/tt:Min"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Continuous/tt:Speed/tt:Min").trimmed().toFloat());
+        if (result->find("//tt:Continuous/tt:Speed/tt:Max"))
+            opt->setAbsolutePositionMin(result->getValue("//tt:Continuous/tt:Speed/tt:Max").trimmed().toFloat());
+        delete result;
+    }
+    delete msg;
+    return opt;
+}
+
 void
 MediaManagement::setImageSettings(ImageSetting* imageSettings) {
     Message* msg = newMessage();

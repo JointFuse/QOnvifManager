@@ -493,12 +493,35 @@ public:
         ONVIF::ImageStatus* imageStatus = imediaManagement->getImageStatus(sourceToken);
         auto& des = idata.mediaConfig.imageStatus;
 
-        des.moveStatus = (ONVIF::MoveStatus)imageStatus->moveStatus();
-        des.position = imageStatus->position();
-        des.error = imageStatus->position();
+        des.moveStatus  = (ONVIF::MoveStatus)imageStatus->moveStatus();
+        des.position    = imageStatus->position();
+        des.error       = imageStatus->position();
 
         bool res = imageStatus->result();
         delete imageStatus;
+        return res;
+    }
+
+    bool refreshFocusMoveOptions() {
+        QString sourceToken;
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            sourceToken = idata.mediaConfig.video.sourceConfig.sourceToken.first();
+        ONVIF::MoveOptions* moveOptions = imediaManagement->getFocusMoveOptions(sourceToken);
+        auto& des = idata.mediaConfig.moveOptions;
+
+        des.absolutePositionMin = moveOptions->absolutePositionMin();
+        des.relativeDistanceMin = moveOptions->relativeDistanceMin();
+        des.absoluteSpeedMin    = moveOptions->absoluteSpeedMin();
+        des.relativeSpeedMin    = moveOptions->relativeSpeedMin();
+        des.continuousSpeedMin  = moveOptions->continuousSpeedMin();
+        des.absolutePositionMax = moveOptions->absolutePositionMax();
+        des.relativeDistanceMax = moveOptions->relativeDistanceMax();
+        des.absoluteSpeedMax    = moveOptions->absoluteSpeedMax();
+        des.relativeSpeedMax    = moveOptions->relativeSpeedMax();
+        des.continuousSpeedMax  = moveOptions->continuousSpeedMax();
+
+        bool res = moveOptions->result();
+        delete moveOptions;
         return res;
     }
 
@@ -1265,6 +1288,11 @@ QOnvifDevice::refreshAudioConfigs() {
 bool
 QOnvifDevice::refreshImageStatus() {
     return d_ptr->refreshImageStatus();
+}
+
+bool
+QOnvifDevice::refreshFocusMoveOptions() {
+    return d_ptr->refreshFocusMoveOptions();
 }
 
 bool

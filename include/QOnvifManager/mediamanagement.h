@@ -16,6 +16,7 @@
 #include "media_management/videosourceconfiguration.h"
 #include "media_management/videosourceconfigurations.h"
 #include "media_management/focusmove.h"
+#include "media_management/moveoptions.h"
 #include "service.h"
 #include <QDateTime>
 
@@ -48,6 +49,7 @@ public:
     ImageSetting* getImageSetting(const QString& token);
     ImageSettingOptions* getImageSettingOptions(const QString& token);
     ImageStatus* getImageStatus(const QString& token);
+    MoveOptions* getFocusMoveOptions(const QString& token);
 
     void
     setImageSettings(ImageSetting* imageSettings);

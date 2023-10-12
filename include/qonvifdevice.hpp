@@ -72,6 +72,7 @@ public:
     bool refreshStreamUris();
     bool refreshAudioConfigs();
     bool refreshImageStatus();
+    bool refreshFocusMoveOptions();
 
     bool focusAbsoluteMove(float position);
     bool focusContinuousMove(float speed);
