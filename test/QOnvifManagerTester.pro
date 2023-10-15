@@ -23,18 +23,14 @@ HEADERS  += mainwindow.hpp
 
 FORMS    += mainwindow.ui
 
-!Debug {
-    LIBS += -L$$PWD/../bin/ -lQOnvifManager
-}
-Debug {
-    LIBS += -L$$PWD/../bin/ -lQOnvifManager_debug
-}
-
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
 
-Debug {
-    CONFIG += console
+CONFIG(release, debug|release) {
+    LIBS += -L$$PWD/../bin/ -lQOnvifManager
+} else {
+    LIBS += -L$$PWD/../bin/ -lQOnvifManager_debug
+#    CONFIG += console
 }
 
 unix {

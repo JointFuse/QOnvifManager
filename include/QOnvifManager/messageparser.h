@@ -11,7 +11,7 @@ namespace ONVIF {
     {
         Q_OBJECT
     public:
-        explicit MessageParser(const QString &data, QHash<QString, QString> &namespaces, QObject *parent = 0);
+        explicit MessageParser(const QString &data, const QHash<QString, QString> &namespaces, QObject *parent = 0);
         ~MessageParser();
         QString getValue(const QString &xpath);
         bool find(const QString &xpath);

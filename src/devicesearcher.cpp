@@ -14,13 +14,64 @@
 
 using namespace ONVIF;
 
+const QHash<QString, QString> DeviceSearcher::namespaces = {
+    {"SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope"},
+    {"SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding"},
+    {"xsi", "http://www.w3.org/2001/XMLSchema-instance"},
+    {"xsd", "http://www.w3.org/2001/XMLSchema"},
+    {"c14n", "http://www.w3.org/2001/10/xml-exc-c14n#"},
+    {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
+    {"xenc", "http://www.w3.org/2001/04/xmlenc#"},
+    {"ds", "http://www.w3.org/2000/09/xmldsig#"},
+    {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
+    {"wsa5", "http://schemas.xmlsoap.org/ws/2004/08/addressing"},
+    {"xmime", "http://tempuri.org/xmime.xsd"},
+    {"xop", "http://www.w3.org/2004/08/xop/include"},
+    {"wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing"},
+    {"tt", "http://www.onvif.org/ver10/schema"},
+    {"wsbf", "http://docs.oasis-open.org/wsrf/bf-2"},
+    {"wstop", "http://docs.oasis-open.org/wsn/t-1"},
+    {"d", "http://schemas.xmlsoap.org/ws/2005/04/discovery"},
+    {"wsr", "http://docs.oasis-open.org/wsrf/r-2"},
+    {"dndl", "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding"},
+    {"dnrd", "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding"},
+    {"dn", "http://www.onvif.org/ver10/network/wsdl"},
+    {"tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl"},
+    {"tanae", "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding"},
+    {"tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding"},
+    {"tan", "http://www.onvif.org/ver20/analytics/wsdl"},
+    {"tds", "http://www.onvif.org/ver10/device/wsdl"},
+    {"tetcp", "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding"},
+    {"tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding"},
+    {"tetnc", "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding"},
+    {"tetnp", "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding"},
+    {"tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding"},
+    {"tetpps", "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding"},
+    {"tev", "http://www.onvif.org/ver10/events/wsdl"},
+    {"tetps", "http://www.onvif.org/ver10/events/wsdl/PausableSubscriptionManagerBinding"},
+    {"wsnt", "http://docs.oasis-open.org/wsn/b-2"},
+    {"tetsm", "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding"},
+    {"timg", "http://www.onvif.org/ver20/imaging/wsdl"},
+    {"timg10", "http://www.onvif.org/ver10/imaging/wsdl"},
+    {"tls", "http://www.onvif.org/ver10/display/wsdl"},
+    {"tmd", "http://www.onvif.org/ver10/deviceIO/wsdl"},
+    {"tptz", "http://www.onvif.org/ver20/ptz/wsdl"},
+    {"trc", "http://www.onvif.org/ver10/recording/wsdl"},
+    {"trp", "http://www.onvif.org/ver10/replay/wsdl"},
+    {"trt", "http://www.onvif.org/ver10/media/wsdl"},
+    {"trv", "http://www.onvif.org/ver10/receiver/wsdl"},
+    {"tse", "http://www.onvif.org/ver10/search/wsdl"},
+    {"tns1", "http://www.onvif.org/ver10/schema"},
+    {"tnsn", "http://www.eventextension.com/2011/event/topics"},
+    {"tnsavg", "http://www.avigilon.com/onvif/ver10/topics"},
+};
 
 DeviceSearcher* DeviceSearcher::searcher = NULL;
 
-DeviceSearcher* DeviceSearcher::instance(QHostAddress &addr)
+DeviceSearcher* DeviceSearcher::instance(QHostAddress &addr __unused)
 {
     if(searcher == NULL) {
-        searcher = new DeviceSearcher(addr);
+        searcher = new DeviceSearcher();
     }
     return searcher;
 }
@@ -48,37 +99,16 @@ QList<QHostAddress> DeviceSearcher::getHostAddress()
     return ipAddressesIPV4;
 }
 
-DeviceSearcher::DeviceSearcher(QHostAddress &addr, QObject *parent) : QObject(parent)
+DeviceSearcher::DeviceSearcher(/*QHostAddress &addr, */QObject *parent) : QObject(parent)
 {
-    mUdpSocket = new QUdpSocket(this);
-    //QHostAddress host("192.168.0.1");
-#ifndef QT_DEBUG
-    mUdpSocket->bind(QHostAddress::Broadcast, 0, QUdpSocket::ShareAddress);
-#else
-    qDebug() << "[device searcher udp] socket state = " << mUdpSocket->bind(QHostAddress::Broadcast, 0, QUdpSocket::ShareAddress) << "\n";
-#endif
-//    mUdpSocket->bind(addr, 0, QUdpSocket::ShareAddress);
-
-//    int opt=4 * 1024 * 1024;
-//    if (setsockopt(mUdpSocket->socketDescriptor(), SOL_SOCKET,
-//                   SO_RCVBUF, (char *)&opt, sizeof(int)) < 0) {
-//        printf("Set ----> SO_RCVBUF error\n");
-//    }
-
-
-    connect(mUdpSocket, SIGNAL(readyRead()),
-            this, SLOT(readPendingDatagrams()));
     connect(&m_timer, SIGNAL(timeout()),
-            this, SLOT(sendSearchMsg()));
+            this, SLOT(sendSearchMsg()),
+            Qt::QueuedConnection);
 }
 
 DeviceSearcher::~DeviceSearcher()
 {
-    if(this->mUdpSocket != NULL) {
-        mUdpSocket->close();
-        delete mUdpSocket;
-        mUdpSocket = NULL;
-    }
+
 }
 
 
@@ -86,6 +116,36 @@ void DeviceSearcher::startSearch()
 {
     static constexpr auto MAX_DEL_MS = 500;
     if (m_timer.isActive()) return;
+
+    m_sockets.clear();
+    auto interfaces = QNetworkInterface::allInterfaces();
+    for (auto& intr : interfaces)
+    {
+        if (!intr.isValid() ||
+            (intr.type() != QNetworkInterface::Ethernet &&
+             intr.type() != QNetworkInterface::Loopback &&
+             intr.type() != QNetworkInterface::Wifi))
+            continue;
+        auto emplRes = m_sockets.emplace(
+                        decltype(m_sockets)::key_type{
+                            new decltype(m_sockets)::key_type::element_type });
+        if (!emplRes.second)
+            continue;
+        auto skct = emplRes.first->get();
+        auto res = skct->bind(QHostAddress{ intr.hardwareAddress() },
+                              0,
+                              QUdpSocket::ReuseAddressHint |
+                              QUdpSocket::ShareAddress);
+        skct->setMulticastInterface(intr);
+#ifdef QT_DEBUG
+        qDebug() << "[" << intr.humanReadableName() << "]"
+                 << " socket state = " << res
+                 << "; last error: " << skct->errorString();
+#endif
+        connect(skct, SIGNAL(readyRead()),
+                this, SLOT(readPendingDatagrams()));
+    }
+
     msg = std::unique_ptr<Message>(Message::getOnvifSearchMessage());
     m_recall = 0;
     m_timer.setInterval(QRandomGenerator::global()->bounded(MAX_DEL_MS));
@@ -98,107 +158,98 @@ void DeviceSearcher::sendSearchMsg()
     if (MAX_SENDS <= m_recall)
     {
         m_timer.stop();
+        m_sockets.clear();
         emit deviceSearchingEnded();
         return;
     }
     ++m_recall;
     QString msg_str = msg->toXmlStr();
-    auto interfaces = QNetworkInterface::allInterfaces();
-    for (auto& intr : interfaces)
+    for (auto& sckt : m_sockets)
     {
-        if (!intr.isValid() ||
-            (intr.type() != QNetworkInterface::Ethernet &&
-             intr.type() != QNetworkInterface::Loopback &&
-             intr.type() != QNetworkInterface::Wifi))
-            continue;
-        mUdpSocket->setMulticastInterface(intr);
-        auto sendedSize = mUdpSocket->writeDatagram(msg_str.toUtf8(), QHostAddress("239.255.255.250"), 3702);
-        qDebug() << "[" << intr.humanReadableName() << "]" << "sended search message size = " << sendedSize;
-        if (sendedSize) qDebug() << "REQQQQQQQ: " << msg->toXmlStr() << "\n"; // todolog
+        auto sendedSize = sckt->writeDatagram(msg_str.toUtf8(),
+                                              QHostAddress("239.255.255.250"),
+                                              3702);
+#ifdef QT_DEBUG
+        qDebug() << "[" << sckt->multicastInterface().humanReadableName() << "]" << "sended search message size = " << sendedSize;
+        if (sendedSize < 0)
+            qDebug() << "[" << sckt->multicastInterface().humanReadableName() << "]" << "error while writing datagram: " << sckt->errorString();
+        if (sendedSize)
+            qDebug() << "REQQQQQQQ: " << msg->toXmlStr() << "\n"; // todolog
+#endif
     }
 }
 
 void DeviceSearcher::readPendingDatagrams()
 {
-    m_timer.stop();
+    auto sckt = m_sockets.find(std::unique_ptr<
+                    decltype(m_sockets)::key_type::element_type
+                >(qobject_cast<
+                    decltype(m_sockets)::key_type::element_type*
+                >(sender())));
+
+    if (sckt == m_sockets.end())
+#ifndef QT_DEBUG
+        return;
+#else
+    {
+        if (sckt->get() != nullptr)
+            qDebug() << "[" << sckt->get()->multicastInterface().humanReadableName() << "]"
+                     << " got packet from unregistered network interface";
+        else
+            qDebug() << "[device searcher] got packet from unregistered network interface";
+        return;
+    }
+#endif
     do {
-        QByteArray datagram;
-        datagram.resize(mUdpSocket->pendingDatagramSize());
+        auto datagram = std::unique_ptr<QByteArray>();
+        datagram->resize(sckt->get()->pendingDatagramSize());
         QHostAddress sender;
         quint16 senderPort;
-        qDebug() << "resolved search message size = "
-                 << mUdpSocket->readDatagram(datagram.data(), datagram.size(),
-                                             &sender, &senderPort);
-        qDebug() << "RESSSSSSS: "
-                 << QString::fromStdString(datagram.toStdString()) << "\n";
+        auto msgSize = sckt->get()->readDatagram(datagram->data(), datagram->size(),
+                                                 &sender, &senderPort);
+#ifdef QT_DEBUG
+        qDebug() << "resolved search message size = " << msgSize;
+        qDebug() << "[" << sender << "] "
+                 << "RESSSSSSS: "
+                 << QString::fromStdString(datagram->toStdString()) << "\n";
+#endif
+        if (msgSize)
+            m_recievedPackets.push(std::move(*(datagram.release())));
+    } while((sckt->get()->hasPendingDatagrams()));
 
-//        qDebug() << "========> \n" << datagram << "\n++++++++++++++++++++++++\n";
+    m_sockets.erase(sckt);
+    QMetaObject::invokeMethod(this,
+                              SLOT(processDatagramQueue),
+                              Qt::QueuedConnection);
+}
 
-        QHash<QString, QString> namespaces;
-        namespaces.insert("SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope");
-        namespaces.insert("SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding");
-        namespaces.insert("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.insert("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaces.insert("c14n", "http://www.w3.org/2001/10/xml-exc-c14n#");
-        namespaces.insert("wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
-        namespaces.insert("xenc", "http://www.w3.org/2001/04/xmlenc#");
-        namespaces.insert("ds", "http://www.w3.org/2000/09/xmldsig#");
-        namespaces.insert("wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-        namespaces.insert("wsa5", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
-        namespaces.insert("xmime", "http://tempuri.org/xmime.xsd");
-        namespaces.insert("xop", "http://www.w3.org/2004/08/xop/include");
-        namespaces.insert("wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
-        namespaces.insert("tt", "http://www.onvif.org/ver10/schema");
-        namespaces.insert("wsbf", "http://docs.oasis-open.org/wsrf/bf-2");
-        namespaces.insert("wstop", "http://docs.oasis-open.org/wsn/t-1");
-        namespaces.insert("d", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
-        namespaces.insert("wsr", "http://docs.oasis-open.org/wsrf/r-2");
-        namespaces.insert("dndl", "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding");
-        namespaces.insert("dnrd", "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding");
-        namespaces.insert("dn", "http://www.onvif.org/ver10/network/wsdl");
-        namespaces.insert("tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl");
-        namespaces.insert("tanae", "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding");
-        namespaces.insert("tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding");
-        namespaces.insert("tan", "http://www.onvif.org/ver20/analytics/wsdl");
-        namespaces.insert("tds", "http://www.onvif.org/ver10/device/wsdl");
-        namespaces.insert("tetcp", "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding");
-        namespaces.insert("tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding");
-        namespaces.insert("tetnc", "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding");
-        namespaces.insert("tetnp", "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding");
-        namespaces.insert("tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding");
-        namespaces.insert("tetpps", "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding");
-        namespaces.insert("tev", "http://www.onvif.org/ver10/events/wsdl");
-        namespaces.insert("tetps", "http://www.onvif.org/ver10/events/wsdl/PausableSubscriptionManagerBinding");
-        namespaces.insert("wsnt", "http://docs.oasis-open.org/wsn/b-2");
-        namespaces.insert("tetsm", "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding");
-        namespaces.insert("timg", "http://www.onvif.org/ver20/imaging/wsdl");
-        namespaces.insert("timg10", "http://www.onvif.org/ver10/imaging/wsdl");
-        namespaces.insert("tls", "http://www.onvif.org/ver10/display/wsdl");
-        namespaces.insert("tmd", "http://www.onvif.org/ver10/deviceIO/wsdl");
-        namespaces.insert("tptz", "http://www.onvif.org/ver20/ptz/wsdl");
-        namespaces.insert("trc", "http://www.onvif.org/ver10/recording/wsdl");
-        namespaces.insert("trp", "http://www.onvif.org/ver10/replay/wsdl");
-        namespaces.insert("trt", "http://www.onvif.org/ver10/media/wsdl");
-        namespaces.insert("trv", "http://www.onvif.org/ver10/receiver/wsdl");
-        namespaces.insert("tse", "http://www.onvif.org/ver10/search/wsdl");
-        namespaces.insert("tns1", "http://www.onvif.org/ver10/schema");
-        namespaces.insert("tnsn", "http://www.eventextension.com/2011/event/topics");
-        namespaces.insert("tnsavg", "http://www.avigilon.com/onvif/ver10/topics");
+void DeviceSearcher::processDatagramQueue()
+{
+    if (m_recievedPackets.empty())
+        return;
 
-        MessageParser parser(QString(datagram), namespaces);
-
+    while (m_recievedPackets.size() != 0)
+    {
         QHash<QString, QString> device_infos;
-        device_infos.insert("ep_address", parser.getValue("//d:ProbeMatches/d:ProbeMatch/wsa:EndpointReference/wsa:Address"));
-        device_infos.insert("types", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:Types"));
-        device_infos.insert("device_ip", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:Scopes"));
 
-        QString address = parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:XAddrs");
-        QStringList addresses = address.split(' ');
-        address = addresses.value(0);
-        device_infos.insert("device_service_address", address);
-        device_infos.insert("scopes", parser.getValue("//d:ProbeMatches/d:ProbeMatch/wsa:EndpointReference/wsa:Address"));
-        device_infos.insert("metadata_version", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:MetadataVersion"));
+        {
+            auto& datagram = m_recievedPackets.front();
+            MessageParser parser(QString(datagram), namespaces);
+            device_infos.insert("ep_address", parser.getValue("//d:ProbeMatches/d:ProbeMatch/wsa:EndpointReference/wsa:Address"));
+            device_infos.insert("types", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:Types"));
+            device_infos.insert("device_ip", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:Scopes"));
+            QString address = parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:XAddrs");
+            QStringList addresses = address.split(' ');
+            address = addresses.value(0);
+            device_infos.insert("device_service_address", address);
+            device_infos.insert("scopes", parser.getValue("//d:ProbeMatches/d:ProbeMatch/wsa:EndpointReference/wsa:Address"));
+            device_infos.insert("metadata_version", parser.getValue("//d:ProbeMatches/d:ProbeMatch/d:MetadataVersion"));
+        }
+
+        m_recievedPackets.pop();
         emit receiveData(device_infos);
-    } while((mUdpSocket->hasPendingDatagrams()));
-    emit deviceSearchingEnded();
+    }
+
+    if (m_sockets.empty())
+        emit deviceSearchingEnded();
 }

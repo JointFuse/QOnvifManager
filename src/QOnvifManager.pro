@@ -13,11 +13,9 @@ CONFIG += staticlib
 
 DESTDIR  = ../bin/
 
-!debug: {
+CONFIG(release, debug|release) {
     TARGET = QOnvifManager
-}
-
-debug: {
+} else {
     TARGET = QOnvifManager_debug
 }
 
@@ -25,10 +23,10 @@ TEMPLATE = lib
 
 #DEFINES += QONVIFMANAGER_LIBRARY
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
+#unix {
+#    target.path = /usr/lib
+#    INSTALLS += target
+#}
 
 INCLUDEPATH += ../include
 INCLUDEPATH += ../include/QOnvifManager

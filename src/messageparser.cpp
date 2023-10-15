@@ -7,7 +7,7 @@
 using namespace ONVIF;
 
 MessageParser::MessageParser(
-    const QString& data, QHash<QString, QString>& namespaces, QObject* parent)
+    const QString& data, const QHash<QString, QString>& namespaces, QObject* parent)
     : QObject(parent) {
     mBuffer.setData(data.toUtf8());
     mBuffer.open(QIODevice::ReadOnly);
