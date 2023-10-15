@@ -68,7 +68,7 @@ const QHash<QString, QString> DeviceSearcher::namespaces = {
 
 DeviceSearcher* DeviceSearcher::searcher = NULL;
 
-DeviceSearcher* DeviceSearcher::instance(QHostAddress &addr __unused)
+DeviceSearcher* DeviceSearcher::instance(QHostAddress &addr __attribute__((unused)))
 {
     if(searcher == NULL) {
         searcher = new DeviceSearcher();
@@ -101,23 +101,6 @@ QList<QHostAddress> DeviceSearcher::getHostAddress()
 
 DeviceSearcher::DeviceSearcher(/*QHostAddress &addr, */QObject *parent) : QObject(parent)
 {
-    connect(&m_timer, SIGNAL(timeout()),
-            this, SLOT(sendSearchMsg()),
-            Qt::QueuedConnection);
-}
-
-DeviceSearcher::~DeviceSearcher()
-{
-
-}
-
-
-void DeviceSearcher::startSearch()
-{
-    static constexpr auto MAX_DEL_MS = 500;
-    if (m_timer.isActive()) return;
-
-    m_sockets.clear();
     auto interfaces = QNetworkInterface::allInterfaces();
     for (auto& intr : interfaces)
     {
@@ -127,8 +110,8 @@ void DeviceSearcher::startSearch()
              intr.type() != QNetworkInterface::Wifi))
             continue;
         auto emplRes = m_sockets.emplace(
-                        decltype(m_sockets)::key_type{
-                            new decltype(m_sockets)::key_type::element_type });
+                        decltype(m_sockets)::value_type{
+                            new decltype(m_sockets)::value_type::element_type });
         if (!emplRes.second)
             continue;
         auto skct = emplRes.first->get();
@@ -145,7 +128,21 @@ void DeviceSearcher::startSearch()
         connect(skct, SIGNAL(readyRead()),
                 this, SLOT(readPendingDatagrams()));
     }
+    connect(&m_timer, SIGNAL(timeout()),
+            this, SLOT(sendSearchMsg()),
+            Qt::QueuedConnection);
+}
 
+DeviceSearcher::~DeviceSearcher()
+{
+
+}
+
+
+void DeviceSearcher::startSearch()
+{
+    static constexpr auto MAX_DEL_MS = 500;
+    if (m_timer.isActive()) return;
     msg = std::unique_ptr<Message>(Message::getOnvifSearchMessage());
     m_recall = 0;
     m_timer.setInterval(QRandomGenerator::global()->bounded(MAX_DEL_MS));
@@ -158,7 +155,6 @@ void DeviceSearcher::sendSearchMsg()
     if (MAX_SENDS <= m_recall)
     {
         m_timer.stop();
-        m_sockets.clear();
         emit deviceSearchingEnded();
         return;
     }
@@ -181,45 +177,29 @@ void DeviceSearcher::sendSearchMsg()
 
 void DeviceSearcher::readPendingDatagrams()
 {
-    auto sckt = m_sockets.find(std::unique_ptr<
-                    decltype(m_sockets)::key_type::element_type
-                >(qobject_cast<
-                    decltype(m_sockets)::key_type::element_type*
-                >(sender())));
-
-    if (sckt == m_sockets.end())
-#ifndef QT_DEBUG
-        return;
-#else
+    for (auto sckt = m_sockets.begin(); sckt != m_sockets.end(); ++sckt)
     {
-        if (sckt->get() != nullptr)
-            qDebug() << "[" << sckt->get()->multicastInterface().humanReadableName() << "]"
-                     << " got packet from unregistered network interface";
-        else
-            qDebug() << "[device searcher] got packet from unregistered network interface";
-        return;
-    }
-#endif
-    do {
-        auto datagram = std::unique_ptr<QByteArray>();
-        datagram->resize(sckt->get()->pendingDatagramSize());
-        QHostAddress sender;
-        quint16 senderPort;
-        auto msgSize = sckt->get()->readDatagram(datagram->data(), datagram->size(),
-                                                 &sender, &senderPort);
+        while (sckt->get()->hasPendingDatagrams())
+        {
+            QByteArray datagram;
+            datagram.resize(sckt->get()->pendingDatagramSize());
+            QHostAddress sender;
+            quint16 senderPort;
+            auto msgSize = sckt->get()->readDatagram(datagram.data(), datagram.size(),
+                                                     &sender, &senderPort);
 #ifdef QT_DEBUG
-        qDebug() << "resolved search message size = " << msgSize;
-        qDebug() << "[" << sender << "] "
-                 << "RESSSSSSS: "
-                 << QString::fromStdString(datagram->toStdString()) << "\n";
+            qDebug() << "resolved search message size = " << msgSize;
+            qDebug() << "[" << sender << "] "
+                     << "RESSSSSSS: "
+                     << QString::fromStdString(datagram.toStdString()) << "\n";
 #endif
-        if (msgSize)
-            m_recievedPackets.push(std::move(*(datagram.release())));
-    } while((sckt->get()->hasPendingDatagrams()));
+            if (msgSize)
+                m_recievedPackets.push(datagram);
+        }
+    }
 
-    m_sockets.erase(sckt);
     QMetaObject::invokeMethod(this,
-                              SLOT(processDatagramQueue),
+                              &DeviceSearcher::processDatagramQueue,
                               Qt::QueuedConnection);
 }
 
@@ -248,8 +228,8 @@ void DeviceSearcher::processDatagramQueue()
 
         m_recievedPackets.pop();
         emit receiveData(device_infos);
-    }
 
-    if (m_sockets.empty())
-        emit deviceSearchingEnded();
+        if (m_recievedPackets.empty())
+            emit deviceSearchingEnded();
+    }
 }

@@ -23,7 +23,6 @@ namespace ONVIF {
     signals:
         void receiveData(const QHash<QString, QString> &data);
         void deviceSearchingEnded();
-    public slots:
     private slots:
         void sendSearchMsg();
         void readPendingDatagrams();
