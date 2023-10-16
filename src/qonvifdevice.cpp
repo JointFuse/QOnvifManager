@@ -978,7 +978,7 @@ public:
         des.position.panTiltY   = status->positionPanTiltY();
         des.position.zoomX      = status->positionZoomX();
         des.moveStatus.panTiltX = status->moveStatusPanTiltX();
-        des.moveStatus.panTiltX = status->moveStatusZoomX();
+        des.moveStatus.zoomX    = status->moveStatusZoomX();
         des.error               = status->error();
         des.utcTime             = status->utcTime();
 

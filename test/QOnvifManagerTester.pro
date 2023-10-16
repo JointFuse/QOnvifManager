@@ -27,10 +27,10 @@ INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
 
 CONFIG(release, debug|release) {
-    LIBS += -L$$PWD/../bin/ -lQOnvifManager
+    LIBS += -L$$PWD/../lib/ -lQOnvifManager
 } else {
-    LIBS += -L$$PWD/../bin/ -lQOnvifManager_debug
-#    CONFIG += console
+    LIBS += -L$$PWD/../lib/ -lQOnvifManager_debug
+    CONFIG += console
 }
 
 unix {
