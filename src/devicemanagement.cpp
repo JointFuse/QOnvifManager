@@ -3,95 +3,79 @@
 
 using namespace ONVIF;
 
+static const auto NAMESPACES = QHash<QString, QString>{
+    {"SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope"},
+    {"SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding"},
+    {"xsi", "http://www.w3.org/2001/XMLSchema-instance"},
+    {"xsd", "http://www.w3.org/2001/XMLSchema"},
+    {"c14n", "http://www.w3.org/2001/10/xml-exc-c14n#"},
+    {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
+    {"xenc", "http://www.w3.org/2001/04/xmlenc#"},
+    {"ds", "http://www.w3.org/2000/09/xmldsig#"},
+    {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
+    {"wsa5", "http://www.w3.org/2005/08/addressing"},
+    {"xmime", "http://tempuri.org/xmime.xsd"},
+    {"xop", "http://www.w3.org/2004/08/xop/include"},
+    {"wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing"},
+    {"tt", "http://www.onvif.org/ver10/schema"},
+    {"wsbf", "http://docs.oasis-open.org/wsrf/bf-2"},
+    {"wstop", "http://docs.oasis-open.org/wsn/t-1"},
+    {"d", "http://schemas.xmlsoap.org/ws/2005/04/discovery"},
+    {"wsr", "http://docs.oasis-open.org/wsrf/r-2"},
+    {"dndl", "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding"},
+    {"dnrd", "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding"},
+    {"dn", "http://www.onvif.org/ver10/network/wsdl"},
+    {"tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl"},
+    {"tanae", "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding"},
+    {"tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding"},
+    {"tan", "http://www.onvif.org/ver20/analytics/wsdl"},
+    {"tds", "http://www.onvif.org/ver10/device/wsdl"},
+    {"tetcp", "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding"},
+    {"tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding"},
+    {"tetnc", "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding"},
+    {"tetnp", "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding"},
+    {"tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding"},
+    {"tetpps", "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding"},
+    {"tev", "http://www.onvif.org/ver10/events/wsdl"},
+    {"tetps", "http://www.onvif.org/ver10/events/wsdl/PausableSubscriptionManagerBinding"},
+    {"wsnt", "http://docs.oasis-open.org/wsn/b-2"},
+    {"tetsm", "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding"},
+    {"timg", "http://www.onvif.org/ver20/imaging/wsdl"},
+    {"timg10", "http://www.onvif.org/ver10/imaging/wsdl"},
+    {"tls", "http://www.onvif.org/ver10/display/wsdl"},
+    {"tmd", "http://www.onvif.org/ver10/deviceIO/wsdl"},
+    {"tptz", "http://www.onvif.org/ver20/ptz/wsdl"},
+    {"trc", "http://www.onvif.org/ver10/recording/wsdl"},
+    {"trp", "http://www.onvif.org/ver10/replay/wsdl"},
+    {"trt", "http://www.onvif.org/ver10/media/wsdl"},
+    {"trv", "http://www.onvif.org/ver10/receiver/wsdl"},
+    {"tse", "http://www.onvif.org/ver10/search/wsdl"},
+    {"tns1", "http://www.onvif.org/ver10/schema"},
+    {"tnsn", "http://www.eventextension.com/2011/event/topics"},
+    {"tnsavg", "http://www.avigilon.com/onvif/ver10/topics"},
+};
+
+static const auto NAMESPACES_MESSAGE = QHash<QString, QString>{
+    {"wsdl", "http://www.onvif.org/ver10/device/wsdl"},
+    {"sch", "http://www.onvif.org/ver10/schema"},
+    {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
+    {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
+};
 
 DeviceManagement::DeviceManagement(
     const QString& wsdlUrl, const QString& username, const QString& password)
     : Service(wsdlUrl, username, password) {}
 
-QHash<QString, QString>
+const QHash<QString, QString>&
 DeviceManagement::namespaces(const QString& key) {
-    QHash<QString, QString> names;
     Q_UNUSED(key);
-    names.insert("SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope");
-    names.insert("SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding");
-    names.insert("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    names.insert("xsd", "http://www.w3.org/2001/XMLSchema");
-    names.insert("c14n", "http://www.w3.org/2001/10/xml-exc-c14n#");
-    names.insert(
-        "wsu",
-        "http://docs.oasis-open.org/wss/2004/01/"
-        "oasis-200401-wss-wssecurity-utility-1.0.xsd");
-    names.insert("xenc", "http://www.w3.org/2001/04/xmlenc#");
-    names.insert("ds", "http://www.w3.org/2000/09/xmldsig#");
-    names.insert(
-        "wsse",
-        "http://docs.oasis-open.org/wss/2004/01/"
-        "oasis-200401-wss-wssecurity-secext-1.0.xsd");
-    names.insert("wsa5", "http://www.w3.org/2005/08/addressing");
-    names.insert("xmime", "http://tempuri.org/xmime.xsd");
-    names.insert("xop", "http://www.w3.org/2004/08/xop/include");
-    names.insert("wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
-    names.insert("tt", "http://www.onvif.org/ver10/schema");
-    names.insert("wsbf", "http://docs.oasis-open.org/wsrf/bf-2");
-    names.insert("wstop", "http://docs.oasis-open.org/wsn/t-1");
-    names.insert("d", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
-    names.insert("wsr", "http://docs.oasis-open.org/wsrf/r-2");
-    names.insert(
-        "dndl",
-        "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding");
-    names.insert(
-        "dnrd",
-        "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding");
-    names.insert("dn", "http://www.onvif.org/ver10/network/wsdl");
-    names.insert("tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl");
-    names.insert(
-        "tanae",
-        "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding");
-    names.insert(
-        "tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding");
-    names.insert("tan", "http://www.onvif.org/ver20/analytics/wsdl");
-    names.insert("tds", "http://www.onvif.org/ver10/device/wsdl");
-    names.insert(
-        "tetcp",
-        "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding");
-    names.insert("tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding");
-    names.insert(
-        "tetnc",
-        "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding");
-    names.insert(
-        "tetnp",
-        "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding");
-    names.insert(
-        "tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding");
-    names.insert(
-        "tetpps",
-        "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding");
-    names.insert("tev", "http://www.onvif.org/ver10/events/wsdl");
-    names.insert(
-        "tetps",
-        "http://www.onvif.org/ver10/events/wsdl/"
-        "PausableSubscriptionManagerBinding");
-    names.insert("wsnt", "http://docs.oasis-open.org/wsn/b-2");
-    names.insert(
-        "tetsm",
-        "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding");
-    names.insert("timg", "http://www.onvif.org/ver20/imaging/wsdl");
-    names.insert("timg10", "http://www.onvif.org/ver10/imaging/wsdl");
-    names.insert("tls", "http://www.onvif.org/ver10/display/wsdl");
-    names.insert("tmd", "http://www.onvif.org/ver10/deviceIO/wsdl");
-    names.insert("tptz", "http://www.onvif.org/ver20/ptz/wsdl");
-    names.insert("trc", "http://www.onvif.org/ver10/recording/wsdl");
-    names.insert("trp", "http://www.onvif.org/ver10/replay/wsdl");
-    names.insert("trt", "http://www.onvif.org/ver10/media/wsdl");
-    names.insert("trv", "http://www.onvif.org/ver10/receiver/wsdl");
-    names.insert("tse", "http://www.onvif.org/ver10/search/wsdl");
-    names.insert("tns1", "http://www.onvif.org/ver10/schema");
-    names.insert("tnsn", "http://www.eventextension.com/2011/event/topics");
-    names.insert("tnsavg", "http://www.avigilon.com/onvif/ver10/topics");
-
-    return names;
+    return NAMESPACES;
 }
 
+Message*
+DeviceManagement::newMessage() {
+    return createMessage(NAMESPACES_MESSAGE);
+}
 
 QHash<QString, QString>
 DeviceManagement::getDeviceInformation() {
@@ -107,8 +91,8 @@ DeviceManagement::getDeviceInformation() {
         device_info.insert(
             "serial_number", result->getValue("//tds:SerialNumber"));
         device_info.insert("hardware_id", result->getValue("//tds:HardwareId"));
+        delete result;
     }
-    delete result;
     delete msg;
     return device_info;
 }
@@ -146,19 +130,11 @@ DeviceManagement::getDeviceScopes() {
                     "/tt:ScopeItem[starts-with(text(),'odm:hardware:') or "
                     "starts-with(text(),'onvif://www.onvif.org/hardware/')]")
                 .remove(0, 31));
+        delete result;
     }
 
-    delete result;
     delete msg;
     return device_scopes;
-}
-
-Message*
-DeviceManagement::newMessage() {
-    QHash<QString, QString> names;
-    names.insert("wsdl", "http://www.onvif.org/ver10/device/wsdl");
-    names.insert("sch", "http://www.onvif.org/ver10/schema");
-    return createMessage(names);
 }
 
 SystemDateAndTime*
@@ -188,9 +164,9 @@ DeviceManagement::getSystemDateAndTime() {
             result->getValue("//tt:LocalDateTime/tt:Time/tt:Hour").toInt(),
             result->getValue("//tt:LocalDateTime/tt:Time/tt:Minute").toInt(),
             result->getValue("//tt:LocalDateTime/tt:Time/tt:Second").toInt());
+        delete result;
     }
 
-    delete result;
     delete msg;
     return systemDateAndTime;
 }
@@ -208,8 +184,8 @@ DeviceManagement::setSystemDateAndTime(SystemDateAndTime* systemDateAndTime) {
             systemDateAndTime->setResult(false);
 
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -223,8 +199,8 @@ DeviceManagement::setDeviceScopes(SystemScopes* systemScopes) {
         else
             systemScopes->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -240,8 +216,8 @@ DeviceManagement::setSystemFactoryDefault(
         else
             systemFactoryDefault->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -255,8 +231,8 @@ DeviceManagement::systemReboot(SystemReboot* systemReboot) {
         else
             systemReboot->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 Users*
@@ -293,8 +269,8 @@ DeviceManagement::getUsers() {
             user->setUserLevel(userLevel.trimmed());
             item = items.next();
         }
+        delete result;
     }
-    delete result;
     delete msg;
     return user;
 }
@@ -311,8 +287,8 @@ DeviceManagement::getCapabilitiesPtz() {
         capabilities = new Capabilities();
         capabilities->setProperty(
             "ptzXAddr", result->getValue("//tt:PTZ/tt:XAddr"));
+        delete result;
     }
-    delete result;
     delete msg;
     return capabilities;
 }
@@ -329,8 +305,8 @@ DeviceManagement::getCapabilitiesImaging() {
         capabilities = new Capabilities();
         capabilities->setProperty(
             "imagingXAddr", result->getValue("//tt:Imaging/tt:XAddr"));
+        delete result;
     }
-    delete result;
     delete msg;
     return capabilities;
 }
@@ -356,8 +332,8 @@ DeviceManagement::getCapabilitiesMedia() {
         capabilities->setProperty(
             "rtpRtspTcp",
             result->getValue("//tt:RTP_RTSP_TCP") == "true" ? true : false);
+        delete result;
     }
-    delete result;
     delete msg;
     return capabilities;
 }
@@ -460,8 +436,8 @@ DeviceManagement::getCapabilitiesDevice() {
             "remoteUserHanding",
             result->getValue("//tt:RemoteUserHanding") == "true" ? true
                                                                  : false);
+        delete result;
     }
-    delete result;
     delete msg;
     return capabilities;
 }
@@ -509,8 +485,8 @@ DeviceManagement::getNetworkInterfaces() {
             result->getValue("//tt:FromDHCP/tt:PrefixLength").toInt());
         networkInterfaces->setProperty(
             "ipv4DHCP", result->getValue("//tt:DHCP"));
+        delete result;
     }
-    delete result;
     delete msg;
     return networkInterfaces;
 }
@@ -527,8 +503,8 @@ DeviceManagement::setNetworkInterfaces(NetworkInterfaces* networkInterfaces) {
         else
             networkInterfaces->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -543,8 +519,8 @@ DeviceManagement::setNetworkProtocols(NetworkProtocols* networkProtocols) {
         else
             networkProtocols->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -560,8 +536,8 @@ DeviceManagement::setDefaultGateway(
         else
             networkDefaultGateway->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -576,8 +552,8 @@ DeviceManagement::setDiscoveryMode(NetworkDiscoveryMode* networkDiscoveryMode) {
         else
             networkDiscoveryMode->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -592,8 +568,8 @@ DeviceManagement::setDNS(NetworkDNS* networkDns) {
         else
             networkDns->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -608,8 +584,8 @@ DeviceManagement::setHostname(NetworkHostname* networkHostname) {
         else
             networkHostname->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void
@@ -624,8 +600,8 @@ DeviceManagement::setNTP(NetworkNTP* networkNtp) {
         else
             networkNtp->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 void DeviceManagement::setUsers(Users* users)
@@ -641,8 +617,8 @@ void DeviceManagement::setUsers(Users* users)
         else
             users->setResult(false);
         delete result;
-        delete msg;
     }
+    delete msg;
 }
 
 NetworkProtocols*
@@ -678,8 +654,8 @@ DeviceManagement::getNetworkProtocols() {
                 protocolsPort.trimmed().toInt());
             item = items.next();
         }
+        delete result;
     }
-    delete result;
     delete msg;
     return networkProtocols;
 }
@@ -697,8 +673,8 @@ DeviceManagement::getNetworkDefaultGateway() {
         networkDefaultGateway->setProperty(
             "ipv6Address",
             result->getValue("//tds:NetworkGateway/tt:IPv6Address"));
+        delete result;
     }
-    delete result;
     delete msg;
     return networkDefaultGateway;
 }
@@ -714,8 +690,8 @@ DeviceManagement::getNetworkDiscoverMode() {
         networkDiscoveryMode = new NetworkDiscoveryMode();
         networkDiscoveryMode->setProperty(
             "discoveryMode", result->getValue("//tds:DiscoveryMode"));
+        delete result;
     }
-    delete result;
     delete msg;
     return networkDiscoveryMode;
 }
@@ -755,8 +731,8 @@ DeviceManagement::getNetworkDNS() {
             networkDNS->setIpv4Address(dnsIPv4Address.trimmed());
             item = items.next();
         }
+        delete result;
     }
-    delete result;
     delete msg;
     return networkDNS;
 }
@@ -774,8 +750,8 @@ DeviceManagement::getNetworkHostname() {
             "dhcp", result->getValue("//tds:HostnameInformation/tt:FromDHCP"));
         networkHostname->setProperty(
             "name", result->getValue("//tds:HostnameInformation/tt:Name"));
+        delete result;
     }
-    delete result;
     delete msg;
     return networkHostname;
 }
@@ -805,8 +781,8 @@ DeviceManagement::getNetworkNTP() {
             "ipv6Address",
             result->getValue(
                 "//tds:NTPInformation/tt:NTPManual/tt:IPv6Address"));
+        delete result;
     }
-    delete result;
     delete msg;
     return networkNTP;
 }

@@ -17,7 +17,7 @@ namespace ONVIF {
         Q_OBJECT
     public:
         static Message* getOnvifSearchMessage();
-        static Message* getMessageWithUserInfo(QHash<QString, QString> &namespaces, const QString &name, const QString &passwd);
+        static Message* getMessageWithUserInfo(const QHash<QString, QString> &namespaces, const QString &name, const QString &passwd);
 
         explicit Message(const QHash<QString, QString> &namespaces, QObject *parent = NULL);
         

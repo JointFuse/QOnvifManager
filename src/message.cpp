@@ -112,17 +112,9 @@ CalcWssePassword(
 
 Message*
 Message::getMessageWithUserInfo(
-    QHash<QString, QString>& namespaces,
+    const QHash<QString, QString>& namespaces,
     const QString& name,
     const QString& passwd) {
-    namespaces.insert(
-        "wsse",
-        "http://docs.oasis-open.org/wss/2004/01/"
-        "oasis-200401-wss-wssecurity-secext-1.0.xsd");
-    namespaces.insert(
-        "wsu",
-        "http://docs.oasis-open.org/wss/2004/01/"
-        "oasis-200401-wss-wssecurity-utility-1.0.xsd");
     Message*    msg      = new Message(namespaces);
     QDomElement security = newElement("wsse:Security");
 

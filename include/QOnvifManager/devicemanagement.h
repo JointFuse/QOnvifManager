@@ -58,7 +58,7 @@ public:
 
 protected:
     Message* newMessage();
-    QHash<QString, QString> namespaces(const QString& key);
+    const QHash<QString, QString>& namespaces(const QString& key);
 };
 }
 

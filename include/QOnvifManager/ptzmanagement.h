@@ -41,7 +41,7 @@ namespace ONVIF {
 
     protected:
         Message *newMessage();
-        QHash<QString, QString> namespaces(const QString &key);
+        const QHash<QString, QString>& namespaces(const QString &key);
     };
 }
 #endif // PTZMANAGEMENT_H

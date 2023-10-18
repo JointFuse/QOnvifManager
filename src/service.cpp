@@ -28,10 +28,12 @@ Service::sendMessage(Message* message, const QString& namespaceKey) {
     if (message == NULL) {
         return NULL;
     }
-    qDebug() << "REQQQQQQQ: " << message->toXmlStr(); // todolog
-    QString result = mClient->sendData(message->toXmlStr());
-    qDebug() << "RESSSSSSS: " << result;
 #ifdef QT_DEBUG
+    qDebug() << "REQQQQQQQ: " << message->toXmlStr(); // todolog
+#endif
+    QString result = mClient->sendData(message->toXmlStr());
+#ifdef QT_DEBUG
+    qDebug() << "RESSSSSSS: " << result;
     auto resFile = new QFile("wsdl_response_log.txt");
     qInfo() << resFile->open(QIODevice::WriteOnly);
     qInfo() << resFile->write(result.toStdString().c_str());
@@ -41,11 +43,11 @@ Service::sendMessage(Message* message, const QString& namespaceKey) {
     if (result == "") {
         return NULL;
     }
-    QHash<QString, QString> names = namespaces(namespaceKey);
+    const QHash<QString, QString>& names = namespaces(namespaceKey);
     return new MessageParser(result, names);
 }
 
 Message*
-Service::createMessage(QHash<QString, QString>& namespaces) {
+Service::createMessage(const QHash<QString, QString>& namespaces) {
     return Message::getMessageWithUserInfo(namespaces, mUsername, mPassword);
 }

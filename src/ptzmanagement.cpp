@@ -3,6 +3,65 @@
 
 using namespace ONVIF;
 
+const static auto NAMESPACES = QHash<QString, QString>{
+    {"SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope"},
+    {"SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding"},
+    {"xsi", "http://www.w3.org/2001/XMLSchema-instance"},
+    {"xsd", "http://www.w3.org/2001/XMLSchema"},
+    {"c14n", "http://www.w3.org/2001/10/xml-exc-c14n#"},
+    {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
+    {"xenc", "http://www.w3.org/2001/04/xmlenc#"},
+    {"ds", "http://www.w3.org/2000/09/xmldsig#"},
+    {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
+    {"wsa5", "http://www.w3.org/2005/08/addressing"},
+    {"xmime", "http://tempuri.org/xmime.xsd"},
+    {"xop", "http://www.w3.org/2004/08/xop/include"},
+    {"wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing"},
+    {"tt", "http://www.onvif.org/ver10/schema"},
+    {"wsbf", "http://docs.oasis-open.org/wsrf/bf-2"},
+    {"wstop", "http://docs.oasis-open.org/wsn/t-1"},
+    {"d", "http://schemas.xmlsoap.org/ws/2005/04/discovery"},
+    {"wsr", "http://docs.oasis-open.org/wsrf/r-2"},
+    {"dndl", "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding"},
+    {"dnrd", "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding"},
+    {"dn", "http://www.onvif.org/ver10/network/wsdl"},
+    {"tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl"},
+    {"tanae", "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding"},
+    {"tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding"},
+    {"tan", "http://www.onvif.org/ver20/analytics/wsdl"},
+    {"tds", "http://www.onvif.org/ver10/device/wsdl"},
+    {"tetcp", "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding"},
+    {"tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding"},
+    {"tetnc", "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding"},
+    {"tetnp", "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding"},
+    {"tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding"},
+    {"tetpps", "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding"},
+    {"tev", "http://www.onvif.org/ver10/events/wsdl"},
+    {"tetps", "http://www.onvif.org/ver10/events/wsdl/PausableSubscriptionManagerBinding"},
+    {"wsnt", "http://docs.oasis-open.org/wsn/b-2"},
+    {"tetsm", "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding"},
+    {"timg", "http://www.onvif.org/ver20/imaging/wsdl"},
+    {"timg10", "http://www.onvif.org/ver10/imaging/wsdl"},
+    {"tls", "http://www.onvif.org/ver10/display/wsdl"},
+    {"tmd", "http://www.onvif.org/ver10/deviceIO/wsdl"},
+    {"tptz", "http://www.onvif.org/ver20/ptz/wsdl"},
+    {"trc", "http://www.onvif.org/ver10/recording/wsdl"},
+    {"trp", "http://www.onvif.org/ver10/replay/wsdl"},
+    {"trt", "http://www.onvif.org/ver10/media/wsdl"},
+    {"trv", "http://www.onvif.org/ver10/receiver/wsdl"},
+    {"tse", "http://www.onvif.org/ver10/search/wsdl"},
+    {"tns1", "http://www.onvif.org/ver10/schema"},
+    {"tnsn", "http://www.eventextension.com/2011/event/topics"},
+    {"tnsavg", "http://www.avigilon.com/onvif/ver10/topics"},
+};
+
+static const auto NAMESPACES_MESSAGE = QHash<QString, QString>{
+    {"wsdl", "http://www.onvif.org/ver20/ptz/wsdl"},
+    {"sch", "http://www.onvif.org/ver10/schema"},
+    {"tptz","http://www.onvif.org/ver20/ptz/wsdl"},
+    {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
+    {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
+};
 
 PtzManagement::PtzManagement(const QString & wsdlUrl, const QString &username, const QString &password)
     :Service(wsdlUrl, username, password)
@@ -10,71 +69,15 @@ PtzManagement::PtzManagement(const QString & wsdlUrl, const QString &username, c
 
 }
 
-QHash<QString, QString> PtzManagement::namespaces(const QString &key)
+const QHash<QString, QString>& PtzManagement::namespaces(const QString &key)
 {
-    QHash<QString, QString> names;
     Q_UNUSED(key)
-    names.insert("SOAP-ENV", "http://www.w3.org/2003/05/soap-envelope");
-    names.insert("SOAP-ENC", "http://www.w3.org/2003/05/soap-encoding");
-    names.insert("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    names.insert("xsd", "http://www.w3.org/2001/XMLSchema");
-    names.insert("c14n", "http://www.w3.org/2001/10/xml-exc-c14n#");
-    names.insert("wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
-    names.insert("xenc", "http://www.w3.org/2001/04/xmlenc#");
-    names.insert("ds", "http://www.w3.org/2000/09/xmldsig#");
-    names.insert("wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-    names.insert("wsa5", "http://www.w3.org/2005/08/addressing");
-    names.insert("xmime", "http://tempuri.org/xmime.xsd");
-    names.insert("xop", "http://www.w3.org/2004/08/xop/include");
-    names.insert("wsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
-    names.insert("tt", "http://www.onvif.org/ver10/schema");
-    names.insert("wsbf", "http://docs.oasis-open.org/wsrf/bf-2");
-    names.insert("wstop", "http://docs.oasis-open.org/wsn/t-1");
-    names.insert("d", "http://schemas.xmlsoap.org/ws/2005/04/discovery");
-    names.insert("wsr", "http://docs.oasis-open.org/wsrf/r-2");
-    names.insert("dndl", "http://www.onvif.org/ver10/network/wsdl/DiscoveryLookupBinding");
-    names.insert("dnrd", "http://www.onvif.org/ver10/network/wsdl/RemoteDiscoveryBinding");
-    names.insert("dn", "http://www.onvif.org/ver10/network/wsdl");
-    names.insert("tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl");
-    names.insert("tanae", "http://www.onvif.org/ver20/analytics/wsdl/AnalyticsEngineBinding");
-    names.insert("tanre", "http://www.onvif.org/ver20/analytics/wsdl/RuleEngineBinding");
-    names.insert("tan", "http://www.onvif.org/ver20/analytics/wsdl");
-    names.insert("tds", "http://www.onvif.org/ver10/device/wsdl");
-    names.insert("tetcp", "http://www.onvif.org/ver10/events/wsdl/CreatePullPointBinding");
-    names.insert("tete", "http://www.onvif.org/ver10/events/wsdl/EventBinding");
-    names.insert("tetnc", "http://www.onvif.org/ver10/events/wsdl/NotificationConsumerBinding");
-    names.insert("tetnp", "http://www.onvif.org/ver10/events/wsdl/NotificationProducerBinding");
-    names.insert("tetpp", "http://www.onvif.org/ver10/events/wsdl/PullPointBinding");
-    names.insert("tetpps", "http://www.onvif.org/ver10/events/wsdl/PullPointSubscriptionBinding");
-    names.insert("tev", "http://www.onvif.org/ver10/events/wsdl");
-    names.insert("tetps", "http://www.onvif.org/ver10/events/wsdl/PausableSubscriptionManagerBinding");
-    names.insert("wsnt", "http://docs.oasis-open.org/wsn/b-2");
-    names.insert("tetsm", "http://www.onvif.org/ver10/events/wsdl/SubscriptionManagerBinding");
-    names.insert("timg", "http://www.onvif.org/ver20/imaging/wsdl");
-    names.insert("timg10", "http://www.onvif.org/ver10/imaging/wsdl");
-    names.insert("tls", "http://www.onvif.org/ver10/display/wsdl");
-    names.insert("tmd", "http://www.onvif.org/ver10/deviceIO/wsdl");
-    names.insert("tptz", "http://www.onvif.org/ver20/ptz/wsdl");
-    names.insert("trc", "http://www.onvif.org/ver10/recording/wsdl");
-    names.insert("trp", "http://www.onvif.org/ver10/replay/wsdl");
-    names.insert("trt", "http://www.onvif.org/ver10/media/wsdl");
-    names.insert("trv", "http://www.onvif.org/ver10/receiver/wsdl");
-    names.insert("tse", "http://www.onvif.org/ver10/search/wsdl");
-    names.insert("tns1", "http://www.onvif.org/ver10/schema");
-    names.insert("tnsn", "http://www.eventextension.com/2011/event/topics");
-    names.insert("tnsavg", "http://www.avigilon.com/onvif/ver10/topics");
-
-    return names;
+    return NAMESPACES;
 }
 
 Message *PtzManagement::newMessage()
 {
-    QHash<QString, QString> names;
-    names.insert("wsdl", "http://www.onvif.org/ver20/ptz/wsdl");
-    names.insert("sch", "http://www.onvif.org/ver10/schema");
-    names.insert("tptz","http://www.onvif.org/ver20/ptz/wsdl");
-
-    return createMessage(names);
+    return createMessage(NAMESPACES_MESSAGE);
 }
 
 Configurations *PtzManagement::getConfigurations()
@@ -210,9 +213,9 @@ Configurations *PtzManagement::getConfigurations()
 
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return configurations;
 }
 
@@ -251,9 +254,9 @@ void PtzManagement::getPresets(Presets *presets)
             presets->setName(value.trimmed());
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
 }
 
 void PtzManagement::removePreset(RemovePreset *removePreset)
@@ -266,9 +269,9 @@ void PtzManagement::removePreset(RemovePreset *removePreset)
             removePreset->setResult(true);
         else
             removePreset->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::setPreset(Preset *preset)
@@ -281,9 +284,9 @@ void PtzManagement::setPreset(Preset *preset)
             preset->setResult(true);
         else
             preset->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::continuousMove(ContinuousMove *continuousMove)
@@ -297,9 +300,9 @@ void PtzManagement::continuousMove(ContinuousMove *continuousMove)
             continuousMove->setResult(true);
         else
             continuousMove->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::absoluteMove(AbsoluteMove *absoluteMove)
@@ -312,9 +315,9 @@ void PtzManagement::absoluteMove(AbsoluteMove *absoluteMove)
             absoluteMove->setResult(true);
         else
             absoluteMove->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::relativeMove(RelativeMove *relativeMove)
@@ -327,9 +330,9 @@ void PtzManagement::relativeMove(RelativeMove *relativeMove)
             relativeMove->setResult(true);
         else
             relativeMove->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::stop(Stop *stop)
@@ -343,9 +346,9 @@ void PtzManagement::stop(Stop *stop)
             stop->setResult(true);
         else
             stop->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 Nodes *PtzManagement::getNodes()
@@ -511,9 +514,9 @@ Nodes *PtzManagement::getNodes()
             nodes->setHomeSupported(value.trimmed() == "true"?true:false);
             item = items.next();
         }
+        delete result;
     }
     delete msg;
-    delete result;
     return nodes;
 }
 
@@ -528,9 +531,9 @@ void PtzManagement::gotoPreset(GotoPreset *gotoPreset)
             gotoPreset->setResult(true);
         else
             gotoPreset->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::gotoHomePosition(GotoHomePosition *gotoHomePosition)
@@ -543,9 +546,9 @@ void PtzManagement::gotoHomePosition(GotoHomePosition *gotoHomePosition)
             gotoHomePosition->setResult(true);
         else
             gotoHomePosition->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::setHomePosition(HomePosition *homePosition)
@@ -558,9 +561,9 @@ void PtzManagement::setHomePosition(HomePosition *homePosition)
             homePosition->setResult(true);
         else
             homePosition->setResult(false);
-        delete msg;
         delete result;
     }
+    delete msg;
 }
 
 void PtzManagement::getConfiguration(Configuration *configuration)
@@ -626,9 +629,9 @@ void PtzManagement::getConfiguration(Configuration *configuration)
         configuration->setZoomUri(result->getValue("//tt:ZoomLimits/tt:Range/tt:URI").trimmed());
         configuration->setZoomXRangeMin(result->getValue("//tt:ZoomLimits/tt:Range/tt:XRange/tt:Min").trimmed().toFloat());
         configuration->setZoomXRangeMax(result->getValue("//tt:ZoomLimits/tt:Range/tt:XRange/tt:Max").trimmed().toFloat());
+        delete result;
     }
     delete msg;
-    delete result;
 }
 
 void PtzManagement::getNode(Node *node)
@@ -685,9 +688,9 @@ void PtzManagement::getNode(Node *node)
         node->setZoomSpeedSpaceXRangeMax(result->getValue("//tt:SupportPTZSpace/tt:ZoomSpeedSpace/tt:Max").trimmed().toInt());
         node->setMaximumNumberOfPresets(result->getValue("//tt:MaximumNumberOfPresets").trimmed().toInt());
         node->setHomeSupport(result->getValue("//tt:HomeSupported").trimmed() == "true"?true:false);
+        delete result;
     }
     delete msg;
-    delete result;
 }
 
 void PtzManagement::getStatus(Status* status)
@@ -741,8 +744,8 @@ void PtzManagement::getStatus(Status* status)
         status->setMoveStatusZoomX(result->getValue("//tt:MoveStatus/tt:Zoom").trimmed() == "MOVING");
         status->setutcTime(QDateTime::fromString(result->getValue("//tt:UtcTime").trimmed(), Qt::DateFormat::ISODate));
         status->setError(result->getValue("//tt:Error").trimmed());
+        delete result;
     }
 
     delete msg;
-    delete result;
 }
