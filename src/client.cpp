@@ -21,14 +21,14 @@ QString Client::sendData(const QString &data)
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"Content-Type: text/xml");
     QNetworkReply *reply = m_networkManager->post(request, data.toUtf8());
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    loop.exec(QEventLoop::ExcludeUserInputEvents);
-    while (reply->isRunning())
-    {
-        if (QCoreApplication::instance() != nullptr)
-            QCoreApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
+    QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+//    while (reply->isRunning())
+//    {
+//        if (QCoreApplication::instance() != nullptr)
+//            QCoreApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
+//    }
     auto replyData = reply->readAll();
     reply->deleteLater();
 //    networkManager->deleteLater();
