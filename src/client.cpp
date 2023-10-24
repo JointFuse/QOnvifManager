@@ -24,13 +24,16 @@ QString Client::sendData(const QString &data)
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     loop.exec(QEventLoop::ExcludeUserInputEvents);
+
 //    while (reply->isRunning())
 //    {
 //        if (QCoreApplication::instance() != nullptr)
 //            QCoreApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
 //    }
+
     auto replyData = reply->readAll();
     reply->deleteLater();
+
 //    networkManager->deleteLater();
     return replyData;
 }

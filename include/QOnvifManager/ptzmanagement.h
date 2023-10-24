@@ -38,7 +38,9 @@ namespace ONVIF {
         void gotoPreset(GotoPreset *gotoPreset);
         void gotoHomePosition(GotoHomePosition *gotoHomePosition);
         void setHomePosition(HomePosition *homePosition);
-
+#ifdef QT_DEBUG
+        void relativeMoving(RelativeMove *relativeMove, const int Hz, const int duration);
+#endif
     protected:
         Message *newMessage();
         const QHash<QString, QString>& namespaces(const QString &key);

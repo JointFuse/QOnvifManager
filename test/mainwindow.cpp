@@ -28,17 +28,26 @@ void
 MainWindow::movePtz(const float x, const float y, const float z) {
     if (ui->checkBox_absoluteMove->isChecked())
     {
-        ionvifManager->device(currentDevice())->refreshPtzStatus();
-        auto inf = ionvifManager->device(currentDevice())->data();
+//        ionvifManager->device(currentDevice())->refreshPtzStatus();
+//        auto inf = ionvifManager->device(currentDevice())->data();
+//        auto step = ui->doubleSpinBox_moveStep->value();
+//        std::map<ONVIF::Axis, float> moves;
+//        if (x != 0 || y != 0)
+//        {
+//            moves[ONVIF::Axis::X] = inf.ptz.status.position.panTiltX + (x == 0 ? 0 : std::copysign(step, x));
+//            moves[ONVIF::Axis::Y] = inf.ptz.status.position.panTiltY + (y == 0 ? 0 : std::copysign(step, y));
+//        }
+//        if (z != 0) moves[ONVIF::Axis::Z] = inf.ptz.status.position.zoomX + std::copysign(step, z);
+//        ionvifManager->device(currentDevice())->absoluteMove(moves);
         auto step = ui->doubleSpinBox_moveStep->value();
         std::map<ONVIF::Axis, float> moves;
         if (x != 0 || y != 0)
         {
-            moves[ONVIF::Axis::X] = inf.ptz.status.position.panTiltX + (x == 0 ? 0 : std::copysign(step, x));
-            moves[ONVIF::Axis::Y] = inf.ptz.status.position.panTiltY + (y == 0 ? 0 : std::copysign(step, y));
+            moves[ONVIF::Axis::X] = (x == 0 ? 0 : std::copysign(step, x));
+            moves[ONVIF::Axis::Y] = (y == 0 ? 0 : std::copysign(step, y));
         }
-        if (z != 0) moves[ONVIF::Axis::Z] = inf.ptz.status.position.zoomX + std::copysign(step, z);
-        ionvifManager->device(currentDevice())->absoluteMove(moves);
+        if (z != 0) moves[ONVIF::Axis::Z] = std::copysign(step, z);
+        ionvifManager->device(currentDevice())->relativeMove(moves);
     }
     else
         ionvifManager->device(currentDevice())->continuousMove(x, y, z);
@@ -286,5 +295,22 @@ void MainWindow::on_pushButton_focusOut_released()
 void MainWindow::on_pushButton_focusIn_released()
 {
     ionvifManager->device(currentDevice())->focusStopMove();
+}
+
+
+void MainWindow::on_pushButton_test_clicked()
+{
+    auto dvc = ionvifManager->device(currentDevice());
+#ifndef QT_DEBUG
+    dvc->relativeMove({{ ONVIF::Axis::X, 0.083 }});
+    dvc->relativeMove({{ ONVIF::Axis::X, 0.056 }});
+    dvc->relativeMove({{ ONVIF::Axis::X, 0.028 }});
+    dvc->relativeMove({{ ONVIF::Axis::X, 0.017 }});
+#else
+    dvc->relativeMoving({{ ONVIF::Axis::X, 0.083 }}, 5, 5);
+    dvc->relativeMoving({{ ONVIF::Axis::X, 0.056 }}, 5, 5);
+    dvc->relativeMoving({{ ONVIF::Axis::X, 0.028 }}, 5, 5);
+    dvc->relativeMoving({{ ONVIF::Axis::X, 0.017 }}, 5, 5);
+#endif
 }
 

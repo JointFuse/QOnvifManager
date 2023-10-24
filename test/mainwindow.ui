@@ -295,6 +295,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_test">
+          <property name="text">
+           <string>TEST</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -408,7 +415,7 @@
         <item row="0" column="0" colspan="2">
          <widget class="QCheckBox" name="checkBox_absoluteMove">
           <property name="text">
-           <string>Absolute move</string>
+           <string>Relative move</string>
           </property>
          </widget>
         </item>

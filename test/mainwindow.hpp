@@ -55,6 +55,8 @@ private slots:
     void on_pushButton_focusOut_released();
     void on_pushButton_focusIn_released();
 
+    void on_pushButton_test_clicked();
+
 private:
     Ui::MainWindow *ui;
     QOnvifManager *ionvifManager;

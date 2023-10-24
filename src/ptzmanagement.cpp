@@ -1,6 +1,11 @@
 ﻿#include "ptzmanagement.h"
 #include <QDebug>
 
+#ifdef QT_DEBUG
+#include <thread>
+#include <chrono>
+#endif
+
 using namespace ONVIF;
 
 const static auto NAMESPACES = QHash<QString, QString>{
@@ -319,6 +324,25 @@ void PtzManagement::absoluteMove(AbsoluteMove *absoluteMove)
     }
     delete msg;
 }
+
+#ifdef QT_DEBUG
+void PtzManagement::relativeMoving(RelativeMove *relativeMove, const int Hz, const int durationSec)
+{
+    Message *msg = newMessage();
+    msg->appendToBody(relativeMove->toxml());
+    const auto xmlStr = msg->toXmlStr();
+    delete msg;
+
+    static constexpr auto TIMEBASE = 1000;
+    auto counter = Hz * durationSec;
+    while (counter)
+    {
+        mClient->sendData(xmlStr);
+        --counter;
+        std::this_thread::sleep_for(std::chrono::milliseconds(TIMEBASE / Hz));
+    }
+}
+#endif
 
 void PtzManagement::relativeMove(RelativeMove *relativeMove)
 {

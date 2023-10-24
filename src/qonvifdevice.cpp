@@ -1126,6 +1126,63 @@ public:
         delete absoluteMove;
         return true;
     }
+    bool relativeMove(const std::map<ONVIF::Axis, float> vls) {
+        ONVIF::RelativeMove* relativeMove = new ONVIF::RelativeMove;
+        relativeMove->setProfileToken(iMediaProfile);
+        if (vls.find(ONVIF::Axis::X) != vls.end())
+        {
+            relativeMove->setTranslationPanTiltX(vls.at(ONVIF::Axis::X));
+            relativeMove->setSpeedPanTiltX(1);
+            if (idata.ptz.config.defaultRelativePanTiltTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativePanTiltTranslationSpace);
+        }
+        if (vls.find(ONVIF::Axis::Y) != vls.end())
+        {
+            relativeMove->setTranslationPanTiltY(vls.at(ONVIF::Axis::Y));
+            relativeMove->setSpeedPanTiltY(1);
+            if (idata.ptz.config.defaultRelativePanTiltTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativePanTiltTranslationSpace);
+        }
+        if (vls.find(ONVIF::Axis::Z) != vls.end())
+        {
+            relativeMove->setTranslationZoomX(vls.at(ONVIF::Axis::Z));
+            relativeMove->setSpeedZoomX(1);
+            if (idata.ptz.config.defaultRelativeZoomTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativeZoomTranslationSpace);
+        }
+        iptzManagement->relativeMove(relativeMove);
+        delete relativeMove;
+        return true;
+    }
+#ifdef QT_DEBUG
+    void relativeMoving(const std::map<ONVIF::Axis, float> vls, const int Hz, const int sec){
+        ONVIF::RelativeMove* relativeMove = new ONVIF::RelativeMove;
+        relativeMove->setProfileToken(iMediaProfile);
+        if (vls.find(ONVIF::Axis::X) != vls.end())
+        {
+            relativeMove->setTranslationPanTiltX(vls.at(ONVIF::Axis::X));
+            relativeMove->setSpeedPanTiltX(1);
+            if (idata.ptz.config.defaultRelativePanTiltTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativePanTiltTranslationSpace);
+        }
+        if (vls.find(ONVIF::Axis::Y) != vls.end())
+        {
+            relativeMove->setTranslationPanTiltY(vls.at(ONVIF::Axis::Y));
+            relativeMove->setSpeedPanTiltY(1);
+            if (idata.ptz.config.defaultRelativePanTiltTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativePanTiltTranslationSpace);
+        }
+        if (vls.find(ONVIF::Axis::Z) != vls.end())
+        {
+            relativeMove->setTranslationZoomX(vls.at(ONVIF::Axis::Z));
+            relativeMove->setSpeedZoomX(1);
+            if (idata.ptz.config.defaultRelativeZoomTranslationSpace.size())
+                relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativeZoomTranslationSpace);
+        }
+        iptzManagement->relativeMoving(relativeMove, Hz, sec);
+        delete relativeMove;
+    }
+#endif
     bool stopMovement() {
         ONVIF::Stop* stop = new ONVIF::Stop;
         stop->setProfileToken(iMediaProfile);
@@ -1405,6 +1462,16 @@ QOnvifDevice::absoluteMove(const std::map<ONVIF::Axis, float> vls) {
     return d_ptr->absoluteMove(vls);
 }
 
+bool
+QOnvifDevice::relativeMove(const std::map<ONVIF::Axis, float> vls) {
+    return d_ptr->relativeMove(vls);
+}
+#ifdef QT_DEBUG
+void
+QOnvifDevice::relativeMoving(const std::map<ONVIF::Axis, float> vls, const int Hz, const int sec){
+    d_ptr->relativeMoving(vls, Hz, sec);
+}
+#endif
 bool
 QOnvifDevice::stopMovement() {
     return d_ptr->stopMovement();

@@ -19,9 +19,12 @@ namespace ONVIF {
     protected:
         virtual const QHash<QString, QString>& namespaces(const QString &key) = 0;
         Message *createMessage(const QHash<QString, QString> &namespaces);
+#ifndef QT_DEBUG
+    private:
+#endif
+        Client *mClient;
     private:
         QString mUsername, mPassword;
-        Client *mClient;
     };
 }
 
