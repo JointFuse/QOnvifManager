@@ -41,6 +41,7 @@ public:
     QString password() const;
 
     void searchDevices();
+    void exploreIp(QString address);
 
     bool refreshDevicesList();
     bool refreshDeviceCapabilities(QString _deviceEndPointAddress);

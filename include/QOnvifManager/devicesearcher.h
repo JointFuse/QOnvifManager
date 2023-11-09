@@ -20,6 +20,7 @@ namespace ONVIF {
         ~DeviceSearcher();
         
         void startSearch();
+        void exploreIp(QString address);
     signals:
         void receiveData(const QHash<QString, QString> &data);
         void deviceSearchingEnded();

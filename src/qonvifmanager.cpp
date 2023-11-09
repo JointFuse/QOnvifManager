@@ -70,6 +70,11 @@ QOnvifManager::searchDevices() {
     Q_D(QOnvifManager);
     d->ideviceSearcher->startSearch();
 }
+void
+QOnvifManager::exploreIp(QString address) {
+    Q_D(QOnvifManager);
+    d->ideviceSearcher->exploreIp(address);
+}
 
 bool
 QOnvifManager::refreshDevicesList() {

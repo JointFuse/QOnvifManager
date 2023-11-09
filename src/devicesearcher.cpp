@@ -104,10 +104,10 @@ DeviceSearcher::DeviceSearcher(/*QHostAddress &addr, */QObject *parent) : QObjec
     auto interfaces = QNetworkInterface::allInterfaces();
     for (auto& intr : interfaces)
     {
-        if (!intr.isValid() ||
+        if (!intr.isValid()/* ||
             (intr.type() != QNetworkInterface::Ethernet &&
              intr.type() != QNetworkInterface::Loopback &&
-             intr.type() != QNetworkInterface::Wifi))
+             intr.type() != QNetworkInterface::Wifi)*/)
             continue;
         auto emplRes = m_sockets.emplace(
                         decltype(m_sockets)::value_type{
@@ -115,16 +115,17 @@ DeviceSearcher::DeviceSearcher(/*QHostAddress &addr, */QObject *parent) : QObjec
         if (!emplRes.second)
             continue;
         auto skct = emplRes.first->get();
-        auto res = skct->bind(QHostAddress{ intr.hardwareAddress() },
+        auto res = skct->bind(QHostAddress::AnyIPv4,
                               0,
                               QUdpSocket::ReuseAddressHint |
-                              QUdpSocket::ShareAddress);
-        skct->setMulticastInterface(intr);
+                                  QUdpSocket::ShareAddress);
 #ifdef QT_DEBUG
-        qDebug() << "[" << intr.humanReadableName() << "]"
+        qDebug() << "[" << intr.humanReadableName() << ":"
+                 << skct->peerAddress() << "]"
                  << " socket state = " << res
                  << "; last error: " << skct->errorString();
 #endif
+        skct->setMulticastInterface(intr);
         connect(skct, SIGNAL(readyRead()),
                 this, SLOT(readPendingDatagrams()));
     }
@@ -149,6 +150,39 @@ void DeviceSearcher::startSearch()
     m_timer.start();
 }
 
+void DeviceSearcher::exploreIp(QString address)
+{
+    auto emplRes = m_sockets.emplace(
+        decltype(m_sockets)::value_type{
+            new decltype(m_sockets)::value_type::element_type });
+    if (!emplRes.second)
+        return;
+    auto sckt = emplRes.first->get();
+    auto res = sckt->bind(QHostAddress::AnyIPv4,
+                          0,
+                          QUdpSocket::ReuseAddressHint |
+                              QUdpSocket::ShareAddress);
+#ifdef QT_DEBUG
+    qDebug() << "[explore ip: " << address << "]"
+             << " socket state = " << res
+             << "; last error: " << sckt->errorString();
+#endif
+    connect(sckt, SIGNAL(readyRead()),
+            this, SLOT(readPendingDatagrams()));
+    auto sendedSize = sckt->writeDatagram(msg->toXmlStr().toUtf8(),
+                                          QHostAddress{ address },
+                                          3702);
+#ifdef QT_DEBUG
+    qDebug() << "[" << address << "]"
+             << "sended search message size = " << sendedSize;
+    if (sendedSize < 0)
+        qDebug() << "[" << address << "]"
+                 << "error while writing datagram: " << sckt->errorString();
+    if (sendedSize)
+        qDebug() << "REQQQQQQQ: " << msg->toXmlStr() << "\n"; // todolog
+#endif
+}
+
 void DeviceSearcher::sendSearchMsg()
 {
     static constexpr auto MAX_SENDS = 2;
@@ -166,9 +200,12 @@ void DeviceSearcher::sendSearchMsg()
                                               QHostAddress("239.255.255.250"),
                                               3702);
 #ifdef QT_DEBUG
-        qDebug() << "[" << sckt->multicastInterface().humanReadableName() << "]" << "sended search message size = " << sendedSize;
+        qDebug() << "[" << sckt->multicastInterface().humanReadableName() << ":"
+                 << sckt->multicastInterface().hardwareAddress() << "]"
+                 << "sended search message size = " << sendedSize;
         if (sendedSize < 0)
-            qDebug() << "[" << sckt->multicastInterface().humanReadableName() << "]" << "error while writing datagram: " << sckt->errorString();
+            qDebug() << "[" << sckt->multicastInterface().humanReadableName() << "]"
+                     << "error while writing datagram: " << sckt->errorString();
         if (sendedSize)
             qDebug() << "REQQQQQQQ: " << msg->toXmlStr() << "\n"; // todolog
 #endif

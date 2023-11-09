@@ -314,3 +314,9 @@ void MainWindow::on_pushButton_test_clicked()
 #endif
 }
 
+
+void MainWindow::on_pushButton_connectIp_clicked()
+{
+    ionvifManager->exploreIp(ui->lineEdit_connectIp->text());
+}
+
