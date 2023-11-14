@@ -120,19 +120,10 @@ Message::getMessageWithUserInfo(
 
     QDomElement usernameToken = newElement("wsse:UsernameToken");
     // usernameToken.setAttribute("wsu:Id", "UsernameToken-1");
-    // QDateTime current = QDateTime::currentDateTime();
     QDateTime current = QDateTime::currentDateTimeUtc();
     QString   timeString =
         current.toString(Qt::ISODate);
-// current.setTime_t(0);
-#if 0 /* PasswordText */
-    QDomElement username = newElement("wsse:Username", name);
-    QDomElement password = newElement("wsse:Password", passwd);
-    password.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
-    usernameToken.appendChild(username);
-    usernameToken.appendChild(password);
-    usernameToken.appendChild(newElement("wsu:Created", current.toTimeSpec(Qt::UTC).toString("yyyy-MM-ddThh:mm:ss")));
-#else /* PasswordDigest  */
+    /* PasswordDigest  */
     QDomElement username = newElement("wsse:Username", name);
     QString     passwdDigest;
     QString     nonceBase64;
@@ -150,15 +141,14 @@ Message::getMessageWithUserInfo(
     usernameToken.appendChild(password); // todo
     usernameToken.appendChild(nonce);
     usernameToken.appendChild(newElement("wsu:Created", timeString));
-#endif
-#if 0
+#if 1
     QDomElement timestamp = newElement("wsu:Timestamp");
     timestamp.setAttribute("wsu:Id", "Timestamp-2");
     timestamp.appendChild(newElement("wsu:Created", current.toTimeSpec(Qt::UTC).toString("yyyy-MM-ddThh:mm:ss")));
     timestamp.appendChild(newElement("wsu:Expires", current.toTimeSpec(Qt::UTC).addSecs(10).toString("yyyy-MM-ddThh:mm:ss")));
 #endif
     security.appendChild(usernameToken);
-    // security.appendChild(timestamp);
+     security.appendChild(timestamp);
     msg->appendToHeader(security);
     return msg;
 }

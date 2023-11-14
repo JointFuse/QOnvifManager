@@ -1,7 +1,12 @@
 ﻿#include <QDebug>
 #include <QMessageBox>
 #include <cmath>
-
+#include <QFile>
+#ifdef QT_DEBUG
+#include <thread>
+#include <chrono>
+#include <QThread>
+#endif
 #include "mainwindow.hpp"
 #include "qonvifdevice.hpp"
 #include "qonvifmanager.hpp"
@@ -314,9 +319,105 @@ void MainWindow::on_pushButton_test_clicked()
 #endif
 }
 
-
 void MainWindow::on_pushButton_connectIp_clicked()
 {
     ionvifManager->exploreIp(ui->lineEdit_connectIp->text());
+}
+
+void MainWindow::on_pushButton_cmTest_clicked()
+{
+#ifdef QT_DEBUG
+    auto killer = false;
+    auto workerReady = false;
+    auto statusCounter = 0;
+    auto worker = [&killer, &workerReady, &statusCounter, login = ionvifManager->user(), password = ionvifManager->password()](){
+        auto mngr = new QOnvifManager{ login, password };
+        mngr->refreshDevicesList();
+        while (mngr->devicesMap().empty())
+            qApp->processEvents();
+        auto dvc = mngr->devicesMap().first();
+        dvc->refreshProfiles();
+        dvc->loadDefaultPtzConfiguration();
+        auto prfLst = dvc->data().profiles.toKenPro;
+        if (prfLst.size())
+            dvc->setMediaProfile(prfLst.first());
+        workerReady = true;
+        while (!killer)
+        {
+            dvc->refreshPtzStatus();
+            ++statusCounter;
+        }
+    };
+    auto dvc = ionvifManager->device(currentDevice());
+    auto wrkThread = QThread::create(worker);
+    wrkThread->start();
+    while (!workerReady)
+        /* wait */;
+    dvc->oneSecContinuousMove(0);
+    killer = true;
+    qDebug() << "Requested ptz status for " << statusCounter << " times";
+    wrkThread->exit();
+    wrkThread->wait();
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//    auto statistic = QList<float>{};
+//    auto dispersions = QList<float>{};
+//    auto info = QString{};
+//    auto killer = true;
+//    auto worker = [&killer, dvc](){
+//        while (killer)
+//        {
+//            dvc->refreshPtzStatus();
+//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//        }
+//    };
+//    auto thread = std::thread(std::move(worker));
+//    for (auto del = 100; del <= 2000; del *= 1.1)
+//    {
+//        for (auto i = 0; i < 20; ++i)
+//        {
+//            dvc->absoluteMove({{ONVIF::Axis::X, 0},{ONVIF::Axis::Y, 0},{ONVIF::Axis::Z, 0}});
+//            auto moveStatus = true;
+//            while (moveStatus)
+//            {
+//                dvc->refreshPtzStatus();
+//                moveStatus = dvc->data().ptz.status.moveStatus.panTiltX ||
+//                        dvc->data().ptz.status.moveStatus.zoomX;
+//            }
+//            dvc->oneSecContinuousMove(del);
+//            dvc->refreshPtzStatus();
+//            statistic.push_back(dvc->data().ptz.status.position.panTiltX);
+//        }
+//        info += "Delay before stop: " + QString::number(del) + "; values: (";
+//        for (auto val : statistic)
+//            info += QString::number(val) + ", ";
+//        info.resize(info.size() - 2);
+//        info += ")\n";
+//        qDebug() << "Delay before stop: " << del << "; values: " << statistic << "\n"
+//                 << "=================================================================================================\n";
+//        auto avarage = float(0);
+//        for (auto val : statistic)
+//            avarage += val;
+//        avarage /= statistic.size();
+//        auto dispersion = float(0);
+//        for (auto val : statistic)
+//            dispersion += std::pow(val - avarage, 2);
+//        dispersion /= statistic.size() - 1;
+//        dispersion = std::pow(dispersion, 0.5);
+//        dispersions.push_back(dispersion);
+//        statistic.clear();
+//    }
+//    killer = false;
+//    thread.join();
+//    info += "Dispersions by different delay: (";
+//    for (auto val : dispersions)
+//        info += QString::number(val) + ", ";
+//    info.resize(info.size() - 2);
+//    info += ")\n";
+//    QFile file{ "test_log.txt" };
+//    file.open(QIODevice::WriteOnly);
+//    QDataStream out{ &file };
+//    out << info.toStdString().c_str();
+//    qDebug() << info.toStdString().c_str();
+#endif
 }
 

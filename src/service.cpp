@@ -24,14 +24,18 @@ Service::sendMessage(Message& message, const QString& namespaceKey) {
 }
 
 MessageParser*
-Service::sendMessage(Message* message, const QString& namespaceKey) {
+Service::sendMessage(Message* message, const QString& namespaceKey, int* sendDuration) {
     if (message == NULL) {
         return NULL;
     }
 #ifdef QT_DEBUG
     qDebug() << "REQQQQQQQ: " << message->toXmlStr(); // todolog
 #endif
+    if (sendDuration != nullptr)
+        *sendDuration = QDateTime::currentMSecsSinceEpoch();
     QString result = mClient->sendData(message->toXmlStr());
+    if (sendDuration != nullptr)
+        *sendDuration = QDateTime::currentMSecsSinceEpoch() - *sendDuration;
 #ifdef QT_DEBUG
     qDebug() << "RESSSSSSS: " << result;
     auto resFile = new QFile("wsdl_response_log.txt");

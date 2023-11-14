@@ -40,6 +40,7 @@ namespace ONVIF {
         void setHomePosition(HomePosition *homePosition);
 #ifdef QT_DEBUG
         void relativeMoving(RelativeMove *relativeMove, const int Hz, const int duration);
+        void oneSecContinuousMove(QString profileToken, int delayMsec);
 #endif
     protected:
         Message *newMessage();

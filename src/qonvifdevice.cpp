@@ -1182,6 +1182,9 @@ public:
         iptzManagement->relativeMoving(relativeMove, Hz, sec);
         delete relativeMove;
     }
+    void oneSecContinuousMove(int delayMsec) {
+        iptzManagement->oneSecContinuousMove(iMediaProfile, delayMsec);
+    }
 #endif
     bool stopMovement() {
         ONVIF::Stop* stop = new ONVIF::Stop;
@@ -1470,6 +1473,10 @@ QOnvifDevice::relativeMove(const std::map<ONVIF::Axis, float> vls) {
 void
 QOnvifDevice::relativeMoving(const std::map<ONVIF::Axis, float> vls, const int Hz, const int sec){
     d_ptr->relativeMoving(vls, Hz, sec);
+}
+void
+QOnvifDevice::oneSecContinuousMove(int delayMsec) {
+    d_ptr->oneSecContinuousMove(delayMsec);
 }
 #endif
 bool

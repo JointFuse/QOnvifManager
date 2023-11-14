@@ -72,8 +72,9 @@ DeviceSearcher* DeviceSearcher::instance(QHostAddress &addr __attribute__((unuse
 {
     if(searcher == NULL) {
         searcher = new DeviceSearcher();
+        return searcher;
     }
-    return searcher;
+    return new DeviceSearcher;
 }
 
 QList<QHostAddress> DeviceSearcher::getHostAddress()

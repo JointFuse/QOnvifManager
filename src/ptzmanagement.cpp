@@ -4,6 +4,7 @@
 #ifdef QT_DEBUG
 #include <thread>
 #include <chrono>
+#include <cmath>
 #endif
 
 using namespace ONVIF;
@@ -341,6 +342,36 @@ void PtzManagement::relativeMoving(RelativeMove *relativeMove, const int Hz, con
         --counter;
         std::this_thread::sleep_for(std::chrono::milliseconds(TIMEBASE / Hz));
     }
+}
+
+void PtzManagement::oneSecContinuousMove(QString profileToken, int delayMsec)
+{
+    Message *msgStart = newMessage();
+    Message *msgStop = newMessage();
+    auto continuousMove = new ContinuousMove;
+    continuousMove->setProfileToken(profileToken);
+    continuousMove->setPanTiltY(0);
+    continuousMove->setZoomX(0);
+    continuousMove->setPanTiltX(-1);
+    msgStart->appendToBody(continuousMove->toxml());
+    continuousMove->setPanTiltX(0);
+    msgStop->appendToBody(continuousMove->toxml());
+
+    const auto startLeft = msgStart->toXmlStr();
+    const auto start = QDateTime::currentMSecsSinceEpoch();
+    auto counter = 0;
+    while (QDateTime::currentMSecsSinceEpoch() - start < 1000)
+    {
+        mClient->sendData(startLeft);
+        ++counter;
+    }
+    qDebug() << "Sended countinuous move command for " << counter << " times by " << QDateTime::currentMSecsSinceEpoch() - start << "msec";
+
+    //    std::this_thread::sleep_for(std::chrono::milliseconds(delayMsec));
+    mClient->sendData(msgStop->toXmlStr());
+    delete continuousMove;
+    delete msgStart;
+    delete msgStop;
 }
 #endif
 

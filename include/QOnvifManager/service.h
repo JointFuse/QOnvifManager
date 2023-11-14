@@ -14,7 +14,7 @@ namespace ONVIF {
         
         ~Service();
         MessageParser *sendMessage(Message &message, const QString &namespaceKey = "");
-        MessageParser *sendMessage(Message *message, const QString &namespaceKey = "");
+        MessageParser *sendMessage(Message *message, const QString &namespaceKey = "", int* sendDuration = nullptr);
         
     protected:
         virtual const QHash<QString, QString>& namespaces(const QString &key) = 0;

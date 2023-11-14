@@ -91,6 +91,7 @@ public:
     bool stopMovement();
 #ifdef QT_DEBUG
     void relativeMoving(const std::map<ONVIF::Axis, float> vls, const int Hz, const int sec);
+    void oneSecContinuousMove(int delayMsec);
 #endif
     bool refreshImageSetting();
     bool refreshImageSettingOptions();
