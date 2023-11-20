@@ -12,7 +12,7 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(const QString &url);
-    QString sendData(const QString &data);
+    QString sendData(const QString &data, int timeoutMs = 0);
 private:
     std::unique_ptr<QNetworkAccessManager> m_networkManager;
     QString mUrl;

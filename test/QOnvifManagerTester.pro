@@ -8,6 +8,8 @@ QT       += core gui network xml xmlpatterns
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+QMAKE_APPLE_DEVICE_ARCHS = arm64
+
 CONFIG += c++11
 
 QMAKE_RPATHDIR += .
