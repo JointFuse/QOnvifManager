@@ -1110,12 +1110,16 @@ public:
             if (idata.ptz.config.defaultAbsolutePantTiltPositionSpace.size())
                 absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsolutePantTiltPositionSpace);
         }
+        else if (vls.find(ONVIF::Axis::Y) != vls.end())
+            absoluteMove->setPositionPanTiltX(idata.ptz.status.position.panTiltX);
         if (vls.find(ONVIF::Axis::Y) != vls.end())
         {
             absoluteMove->setPositionPanTiltY(vls.at(ONVIF::Axis::Y));
             if (idata.ptz.config.defaultAbsolutePantTiltPositionSpace.size())
                 absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsolutePantTiltPositionSpace);
         }
+        else if (vls.find(ONVIF::Axis::X) != vls.end())
+            absoluteMove->setPositionPanTiltY(idata.ptz.status.position.panTiltY);
         if (vls.find(ONVIF::Axis::Z) != vls.end())
         {
             absoluteMove->setPositionZoomX(vls.at(ONVIF::Axis::Z));

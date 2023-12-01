@@ -17,19 +17,25 @@ QDomElement ContinuousMove::toxml()
     QDomElement continuousMove = newElement("wsdl:ContinuousMove");
     QDomElement velocity = newElement("wsdl:Velocity");
     QDomElement profileToken = newElement("wsdl:ProfileToken",this->profileToken());
-    QDomElement panTilt = newElement("sch:PanTilt");
-    panTilt.setAttribute("x",this->panTiltX());
-    panTilt.setAttribute("y",this->panTiltY());
-//    panTilt.setAttribute("space",this->panTiltSpace());
-    QDomElement zoom = newElement("sch:Zoom");
-    zoom.setAttribute("x",this->zoomX());
-    zoom.setAttribute("space",this->zoomSpace());
-    QDomElement timeout = newElement("wsdl:Timeout",this->timeout());
     continuousMove.appendChild(profileToken);
-    continuousMove.appendChild(velocity);
+    if (m_panTiltX != 0 || m_panTiltY != 0)
+    {
+        QDomElement panTilt = newElement("sch:PanTilt");
+        if (m_panTiltX != 0) panTilt.setAttribute("x",this->panTiltX());
+        if (m_panTiltY != 0) panTilt.setAttribute("y",this->panTiltY());
+        panTilt.setAttribute("space",this->panTiltSpace());
+        velocity.appendChild(panTilt);
+    }
+    if (m_zoomX != 0)
+    {
+        QDomElement zoom = newElement("sch:Zoom");
+        zoom.setAttribute("x",this->zoomX());
+        zoom.setAttribute("space",this->zoomSpace());
+        velocity.appendChild(zoom);
+    }
+//    QDomElement timeout = newElement("wsdl:Timeout",this->timeout());
 //    continuousMove.appendChild(timeout);
-    velocity.appendChild(panTilt);
-    velocity.appendChild(zoom);
+    continuousMove.appendChild(velocity);
     return continuousMove;
 }
 

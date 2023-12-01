@@ -18,26 +18,29 @@ QDomElement AbsoluteMove::toxml()
     QDomElement profileToken = newElement("wsdl:ProfileToken",this->profileToken());
     QDomElement position = newElement("wsdl:Position");
     QDomElement positionPanTilt = newElement("sch:PanTilt");
-    if (m_x) positionPanTilt.setAttribute("x",this->positionPanTiltX());
-    if (m_y) positionPanTilt.setAttribute("y",this->positionPanTiltY());
-    positionPanTilt.setAttribute("space",this->positionPanTiltSpace());
+    if (m_x || m_y)
+    {
+        positionPanTilt.setAttribute("x",this->positionPanTiltX());
+        positionPanTilt.setAttribute("y",this->positionPanTiltY());
+    }
+//    positionPanTilt.setAttribute("space",this->positionPanTiltSpace());
     QDomElement positionZoom = newElement("sch:Zoom");
     if (m_z) positionZoom.setAttribute("x",this->positionZoomX());
-    positionZoom.setAttribute("space",this->positionZoomSpace());
+//    positionZoom.setAttribute("space",this->positionZoomSpace());
     QDomElement speed = newElement("wsdl:Speed");
     QDomElement speedPanTilt = newElement("sch:PanTilt");
     speedPanTilt.setAttribute("x",this->speedPanTiltX());
     speedPanTilt.setAttribute("y",this->speedPanTiltY());
-    speedPanTilt.setAttribute("space",this->speedPanTiltSpace());
+//    speedPanTilt.setAttribute("space",this->speedPanTiltSpace());
     QDomElement speedZoom = newElement("sch:Zoom");
     speedZoom.setAttribute("x",this->speedZoomX());
-    speedZoom.setAttribute("space",this->speedZoomSpace());
-    absoluteMove.appendChild(profileToken);
-    absoluteMove.appendChild(position);
-    absoluteMove.appendChild(speed);
+//    speedZoom.setAttribute("space",this->speedZoomSpace());
     position.appendChild(positionPanTilt);
     position.appendChild(positionZoom);
     speed.appendChild(speedPanTilt);
     speed.appendChild(speedZoom);
+    absoluteMove.appendChild(profileToken);
+    absoluteMove.appendChild(position);
+    absoluteMove.appendChild(speed);
     return absoluteMove;
 }
