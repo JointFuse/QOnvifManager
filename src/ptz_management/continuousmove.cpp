@@ -4,7 +4,9 @@ using namespace ONVIF;
 
 ContinuousMove::ContinuousMove(QObject *parent):QObject(parent)
 {
-
+    m_panTiltX = 0;
+    m_panTiltY = 0;
+    m_zoomX = 0;
 }
 
 ContinuousMove::~ContinuousMove()

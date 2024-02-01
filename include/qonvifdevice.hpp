@@ -88,6 +88,9 @@ public:
     bool continuousMove(const float x, const float y, const float z);
     bool absoluteMove(const std::map<ONVIF::Axis, float> vls);
     bool relativeMove(const std::map<ONVIF::Axis, float> vls);
+    bool comboMove(const std::map<ONVIF::Axis, float>& cntMp = {},
+                   const std::map<ONVIF::Axis, float>& absMp = {},
+                   const std::map<ONVIF::Axis, float>& rltMp = {});
     bool stopMovement();
 #ifdef QT_DEBUG
     void relativeMoving(const std::map<ONVIF::Axis, float> vls, const int Hz, const int sec);

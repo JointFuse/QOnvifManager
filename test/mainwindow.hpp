@@ -61,6 +61,8 @@ private slots:
 
     void on_pushButton_cmTest_clicked();
 
+    void on_checkBox_absoluteMove_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QOnvifManager *ionvifManager;

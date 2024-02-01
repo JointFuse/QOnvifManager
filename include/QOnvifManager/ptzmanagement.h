@@ -34,6 +34,7 @@ namespace ONVIF {
         void continuousMove(ContinuousMove *continuousMove);
         void absoluteMove(AbsoluteMove *absoluteMove);
         void relativeMove(RelativeMove *relativeMove);
+        void comboMove(ContinuousMove*, AbsoluteMove*, RelativeMove*);
         void stop(Stop *stop);
         void gotoPreset(GotoPreset *gotoPreset);
         void gotoHomePosition(GotoHomePosition *gotoHomePosition);

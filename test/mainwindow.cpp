@@ -245,30 +245,39 @@ MainWindow::on_btnzoomOut_pressed() {
 
 void
 MainWindow::on_horizontalSlider_zoom_sliderReleased() {
-    ionvifManager->device(currentDevice())->absoluteMove(
-        {
-        {
-            ONVIF::Axis::Z,
-            ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum()
-        }
-        }
-    );
+    if (!ui->checkBox_absoluteMove->isChecked())
+    {
+        ionvifManager->device(currentDevice())->absoluteMove(
+            {
+                {
+                    ONVIF::Axis::Z,
+                    ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum()
+                }
+            }
+            );
+    }
+    else
+    {
+        ionvifManager->device(currentDevice())->focusAbsoluteMove(
+            ui->horizontalSlider_zoom->value() * 1.0 / ui->horizontalSlider_zoom->maximum());
+    }
 }
 
 
 void
 MainWindow::on_horizontalSlider_zoom_valueChanged(int value) {
-    if (ui->horizontalSlider_zoom->isSliderDown())
-        return;
-    else
-        ionvifManager->device(currentDevice())->absoluteMove(
-            {
-            {
-                ONVIF::Axis::Z,
-                value * 1.0 / ui->horizontalSlider_zoom->maximum()
-            }
-            }
-        );
+//    if (ui->horizontalSlider_zoom->isSliderDown())
+//        return;
+//    else
+//        ionvifManager->device(currentDevice())->absoluteMove(
+//            {
+//            {
+//                ONVIF::Axis::Z,
+//                value * 1.0 / ui->horizontalSlider_zoom->maximum()
+//            }
+//            }
+//        );
+        ;
 }
 
 
@@ -281,13 +290,13 @@ MainWindow::on_actionAbsoluteMoveStepVisibility_triggered() {
 
 void MainWindow::on_pushButton_focusIn_pressed()
 {
-    ionvifManager->device(currentDevice())->focusContinuousMove(1);
+    ionvifManager->device(currentDevice())->focusContinuousMove(0.1);
 }
 
 
 void MainWindow::on_pushButton_focusOut_pressed()
 {
-    ionvifManager->device(currentDevice())->focusContinuousMove(-1);
+    ionvifManager->device(currentDevice())->focusContinuousMove(-0.1);
 }
 
 
@@ -326,39 +335,46 @@ void MainWindow::on_pushButton_connectIp_clicked()
 
 void MainWindow::on_pushButton_cmTest_clicked()
 {
-#ifdef QT_DEBUG
-    auto killer = false;
-    auto workerReady = false;
-    auto statusCounter = 0;
-    auto worker = [&killer, &workerReady, &statusCounter, login = ionvifManager->user(), password = ionvifManager->password()](){
-        auto mngr = new QOnvifManager{ login, password };
-        mngr->refreshDevicesList();
-        while (mngr->devicesMap().empty())
-            qApp->processEvents();
-        auto dvc = mngr->devicesMap().first();
-        dvc->refreshProfiles();
-        dvc->loadDefaultPtzConfiguration();
-        auto prfLst = dvc->data().profiles.toKenPro;
-        if (prfLst.size())
-            dvc->setMediaProfile(prfLst.first());
-        workerReady = true;
-        while (!killer)
-        {
-            dvc->refreshPtzStatus();
-            ++statusCounter;
-        }
-    };
+
     auto dvc = ionvifManager->device(currentDevice());
-    auto wrkThread = QThread::create(worker);
-    wrkThread->start();
-    while (!workerReady)
-        /* wait */;
-    dvc->oneSecContinuousMove(0);
-    killer = true;
-    qDebug() << "Requested ptz status for " << statusCounter << " times";
-    wrkThread->exit();
-    wrkThread->wait();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    dvc->comboMove(
+        {
+            { ONVIF::Axis::X, 1}
+        }
+    );
+#ifdef QT_DEBUG
+//    auto killer = false;
+//    auto workerReady = false;
+//    auto statusCounter = 0;
+//    auto worker = [&killer, &workerReady, &statusCounter, login = ionvifManager->user(), password = ionvifManager->password()](){
+//        auto mngr = new QOnvifManager{ login, password };
+//        mngr->refreshDevicesList();
+//        while (mngr->devicesMap().empty())
+//            qApp->processEvents();
+//        auto dvc = mngr->devicesMap().first();
+//        dvc->refreshProfiles();
+//        dvc->loadDefaultPtzConfiguration();
+//        auto prfLst = dvc->data().profiles.toKenPro;
+//        if (prfLst.size())
+//            dvc->setMediaProfile(prfLst.first());
+//        workerReady = true;
+//        while (!killer)
+//        {
+//            dvc->refreshPtzStatus();
+//            ++statusCounter;
+//        }
+//    };
+//    auto dvc = ionvifManager->device(currentDevice());
+//    auto wrkThread = QThread::create(worker);
+//    wrkThread->start();
+//    while (!workerReady)
+//        /* wait */;
+//    dvc->oneSecContinuousMove(0);
+//    killer = true;
+//    qDebug() << "Requested ptz status for " << statusCounter << " times";
+//    wrkThread->exit();
+//    wrkThread->wait();
+//    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 //    auto statistic = QList<float>{};
 //    auto dispersions = QList<float>{};
 //    auto info = QString{};
@@ -419,5 +435,14 @@ void MainWindow::on_pushButton_cmTest_clicked()
 //    out << info.toStdString().c_str();
 //    qDebug() << info.toStdString().c_str();
 #endif
+}
+
+
+void MainWindow::on_checkBox_absoluteMove_clicked(bool checked)
+{
+    if (checked)
+        ui->label_15->setText("Focus");
+    else
+        ui->label_15->setText("Zoom");
 }
 

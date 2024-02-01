@@ -390,6 +390,48 @@ void PtzManagement::relativeMove(RelativeMove *relativeMove)
     delete msg;
 }
 
+
+void PtzManagement::comboMove(ContinuousMove* cnt,
+                              AbsoluteMove* abs,
+                              RelativeMove* rlt)
+{
+    Message *msg = newMessage();
+    if (cnt){
+        ONVIF::Status* status = new ONVIF::Status;
+        status->setProfileToken(cnt->profileToken());
+        msg->appendToBody(status->toxml());
+        delete status;
+        msg->appendToBody(cnt->toxml());
+    }
+    if (abs)
+        msg->appendToBody(abs->toxml());
+    if (rlt)
+        msg->appendToBody(rlt->toxml());
+    MessageParser *result = sendMessage(msg);
+    if (result != NULL) {
+        if (cnt) {
+            if(result->find("//tptz:ContinuousMoveResponse"))
+                cnt->setResult(true);
+            else
+                cnt->setResult(false);
+        }
+        if (abs) {
+            if(result->find("//tptz:AbsoluteMoveResponse"))
+                abs->setResult(true);
+            else
+                abs->setResult(false);
+        }
+        if (rlt) {
+            if(result->find("//tptz:RelativeMoveResponse"))
+                rlt->setResult(true);
+            else
+                rlt->setResult(false);
+        }
+        delete result;
+    }
+    delete msg;
+}
+
 void PtzManagement::stop(Stop *stop)
 {
     Message *msg = newMessage();
@@ -754,6 +796,11 @@ void PtzManagement::getStatus(Status* status)
     msg->appendToBody(status->toxml());
     MessageParser *result = sendMessage(msg);
     if(result != NULL) {
+        if(result->find("//tptz:GetStatusResponse"))
+            status->setResult(true);
+        else
+            status->setResult(false);
+
         QXmlQuery *query = result->query();
         QDomNodeList itemNodeList;
         QDomNode node;

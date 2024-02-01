@@ -158,6 +158,8 @@ void DeviceSearcher::exploreIp(QString address)
             new decltype(m_sockets)::value_type::element_type });
     if (!emplRes.second)
         return;
+    if (!msg)
+        msg = std::unique_ptr<Message>(Message::getOnvifSearchMessage());
     auto sckt = emplRes.first->get();
     auto res = sckt->bind(QHostAddress::AnyIPv4,
                           0,

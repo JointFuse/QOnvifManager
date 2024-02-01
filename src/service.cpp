@@ -29,7 +29,10 @@ Service::sendMessage(Message* message, const QString& namespaceKey, int* sendDur
         return NULL;
     }
 #ifdef QT_DEBUG
+    auto resFile = new QFile("wsdl_messages_log.txt");
     qDebug() << "REQQQQQQQ: " << message->toXmlStr(); // todolog
+    qInfo() << resFile->open(QIODevice::WriteOnly | QIODevice::Append);
+    qInfo() << resFile->write(message->toXmlStr().toStdString().c_str());
 #endif
     if (sendDuration != nullptr)
         *sendDuration = QDateTime::currentMSecsSinceEpoch();
@@ -38,8 +41,6 @@ Service::sendMessage(Message* message, const QString& namespaceKey, int* sendDur
         *sendDuration = QDateTime::currentMSecsSinceEpoch() - *sendDuration;
 #ifdef QT_DEBUG
     qDebug() << "RESSSSSSS: " << result;
-    auto resFile = new QFile("wsdl_response_log.txt");
-    qInfo() << resFile->open(QIODevice::WriteOnly);
     qInfo() << resFile->write(result.toStdString().c_str());
     resFile->close();
     delete resFile;

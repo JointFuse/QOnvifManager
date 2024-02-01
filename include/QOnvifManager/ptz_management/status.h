@@ -137,7 +137,7 @@ namespace ONVIF {
         bool m_moveStatusZoomX;
         QString m_error;
         QDateTime m_utcTime;
-        bool m_result;
+        bool m_result{ false };
     };
 }
 #endif // STATUS_H

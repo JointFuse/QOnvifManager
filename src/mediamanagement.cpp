@@ -63,6 +63,7 @@ static const auto NAMESPACES_MESSAGE = QHash<QString, QString>{
     {"trt", "http://www.onvif.org/ver10/media/wsdl"},
     {"sch", "http://www.onvif.org/ver10/schema"},
     {"timg", "http://www.onvif.org/ver20/imaging/wsdl"},
+    {"timg10", "http://www.onvif.org/ver10/imaging/wsdl"},
     {"wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"},
     {"wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"},
 };
@@ -2410,18 +2411,31 @@ MediaManagement::getFocusMoveOptions(const QString& token) {
     MessageParser* result = sendMessage(msg);
     if (result != NULL)
     {
+        if (result->find("//timg:GetMoveOptionsResponse"))
+            opt->setResult(true);
+        else
+            opt->setResult(false);
+
         if (result->find("//tt:Absolute/tt:Position/tt:Min"))
             opt->setAbsolutePositionMin(result->getValue("//tt:Absolute/tt:Position/tt:Min").trimmed().toFloat());
         if (result->find("//tt:Absolute/tt:Position/tt:Max"))
-            opt->setAbsolutePositionMin(result->getValue("//tt:Absolute/tt:Position/tt:Max").trimmed().toFloat());
+            opt->setAbsolutePositionMax(result->getValue("//tt:Absolute/tt:Position/tt:Max").trimmed().toFloat());
+        if (result->find("//tt:Absolute/tt:Speed/tt:Min"))
+            opt->setAbsoluteSpeedMin(result->getValue("//tt:Absolute/tt:Speed/tt:Min").trimmed().toFloat());
+        if (result->find("//tt:Absolute/tt:Speed/tt:Max"))
+            opt->setAbsoluteSpeedMax(result->getValue("//tt:Absolute/tt:Speed/tt:Max").trimmed().toFloat());
         if (result->find("//tt:Relative/tt:Distance/tt:Min"))
-            opt->setAbsolutePositionMin(result->getValue("//tt:Relative/tt:Distance/tt:Min").trimmed().toFloat());
+            opt->setRelativeDistanceMin(result->getValue("//tt:Relative/tt:Distance/tt:Min").trimmed().toFloat());
         if (result->find("//tt:Relative/tt:Distance/tt:Max"))
-            opt->setAbsolutePositionMin(result->getValue("//tt:Relative/tt:Distance/tt:Max").trimmed().toFloat());
+            opt->setRelativeDistanceMax(result->getValue("//tt:Relative/tt:Distance/tt:Max").trimmed().toFloat());
+        if (result->find("//tt:Relative/tt:Speed/tt:Min"))
+            opt->setRelativeSpeedMin(result->getValue("//tt:Relative/tt:Speed/tt:Min").trimmed().toFloat());
+        if (result->find("//tt:Relative/tt:Speed/tt:Max"))
+            opt->setRelativeSpeedMax(result->getValue("//tt:Relative/tt:Speed/tt:Max").trimmed().toFloat());
         if (result->find("//tt:Continuous/tt:Speed/tt:Min"))
-            opt->setAbsolutePositionMin(result->getValue("//tt:Continuous/tt:Speed/tt:Min").trimmed().toFloat());
+            opt->setContinuousSpeedMin(result->getValue("//tt:Continuous/tt:Speed/tt:Min").trimmed().toFloat());
         if (result->find("//tt:Continuous/tt:Speed/tt:Max"))
-            opt->setAbsolutePositionMin(result->getValue("//tt:Continuous/tt:Speed/tt:Max").trimmed().toFloat());
+            opt->setContinuousSpeedMax(result->getValue("//tt:Continuous/tt:Speed/tt:Max").trimmed().toFloat());
         delete result;
     }
     delete msg;
