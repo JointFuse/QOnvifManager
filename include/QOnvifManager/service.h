@@ -1,6 +1,7 @@
 ﻿#ifndef ONVIF_SERVICE_H
 #define ONVIF_SERVICE_H
 
+#include <chrono>
 #include <QObject>
 #include "message.h"
 #include "client.h"
@@ -24,6 +25,8 @@ namespace ONVIF {
 #endif
         Client *mClient;
     private:
+        std::chrono::system_clock::time_point mLastDeviceTimeUpdate;
+        QDateTime mDeviceDateTime;
         QString mUsername, mPassword;
     };
 }

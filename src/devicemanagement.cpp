@@ -168,6 +168,7 @@ DeviceManagement::getSystemDateAndTime() {
     }
 
     delete msg;
+
     return systemDateAndTime;
 }
 

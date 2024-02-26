@@ -12,9 +12,11 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(const QString &url);
+    ~Client();
     QString sendData(const QString &data, int timeoutMs = 0);
 private:
     std::unique_ptr<QNetworkAccessManager> m_networkManager;
+    QNetworkReply* m_lastReply{ nullptr };
     QString mUrl;
     bool mTimerIsTrue;
 };

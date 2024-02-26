@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QHash>
 #include <QDomElement>
-
+#include <QDateTime>
 
 namespace ONVIF {
 
@@ -17,7 +17,10 @@ namespace ONVIF {
         Q_OBJECT
     public:
         static Message* getOnvifSearchMessage();
-        static Message* getMessageWithUserInfo(const QHash<QString, QString> &namespaces, const QString &name, const QString &passwd);
+        static Message* getMessageWithUserInfo(const QHash<QString, QString> &namespaces,
+                                               const QString &name,
+                                               const QString &passwd,
+                                               QDateTime current = QDateTime::currentDateTimeUtc());
 
         explicit Message(const QHash<QString, QString> &namespaces, QObject *parent = NULL);
         

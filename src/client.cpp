@@ -14,33 +14,35 @@ Client::Client(const QString &url)
     mUrl = url;
 }
 
+Client::~Client()
+{
+
+}
+
 QString Client::sendData(const QString &data, int timeout)
 {
-//    QNetworkAccessManager* networkManager = new QNetworkAccessManager;
     QUrl url(mUrl);
     QNetworkRequest request(url);
     if (0 < timeout)
         m_networkManager->setTransferTimeout(timeout);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"Content-Type: text/xml");
-    QNetworkReply *reply = m_networkManager->post(request, data.toUtf8());
+    m_lastReply = m_networkManager->post(request, data.toUtf8());
     QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    connect(m_lastReply, SIGNAL(finished()), &loop, SLOT(quit()));
     loop.exec(QEventLoop::ExcludeUserInputEvents);
-    reply->deleteLater();
 
-//    while (reply->isRunning())
-//    {
-//        if (QCoreApplication::instance() != nullptr)
-//            QCoreApplication::instance()->processEvents(QEventLoop::ExcludeUserInputEvents);
-//    }    
-//    networkManager->deleteLater();
-
-    auto replyData = QByteArray{};
+    if (!m_lastReply->isFinished())
+    {
+#ifdef QT_DEBUG
+        qDebug() << "[QOnvifManager] Thread exited while QNetworkReply is still running!";
+#endif
+        m_lastReply->abort();
+    }
 
     if (0 < timeout)
         m_networkManager->setTransferTimeout(0);
-    if (reply->error() != QNetworkReply::TimeoutError)
-        replyData = reply->readAll();
+    if (m_lastReply->error() != QNetworkReply::TimeoutError)
+        return m_lastReply->readAll();
 
-    return replyData;
+    return {};
 }

@@ -6,6 +6,7 @@
 #include <QTime>
 #include <QUuid>
 #include <time.h>
+#include <QRandomGenerator64>
 
 using namespace ONVIF;
 
@@ -77,7 +78,7 @@ CalcWssePassword(
     QString&       passwdDigest,
     QString&       nonceBase64) {
     char                buf[SOAP_WSSE_NONCELEN];
-    int                 nonceInt = qrand();
+    int                 nonceInt = QRandomGenerator64::system()->generate64();
     QByteArray          sha1Output;
     QCryptographicHash* hash = NULL;
 
@@ -97,7 +98,7 @@ CalcWssePassword(
     hash->addData(passwd.toLocal8Bit().data(), strlen(passwd.toLocal8Bit().data()));
     sha1Output = hash->result();
     QString passwdDigestStr(sha1Output.toBase64());
-    QString sha1OutputStr(sha1Output.toHex());
+//    QString sha1OutputStr(sha1Output.toHex());
     // qDebug() << "sha1Output" << sha1OutputStr;
     // qDebug() << "passwdDigestStr:";
     // qDebug() << passwdDigestStr;
@@ -114,15 +115,14 @@ Message*
 Message::getMessageWithUserInfo(
     const QHash<QString, QString>& namespaces,
     const QString& name,
-    const QString& passwd) {
+    const QString& passwd,
+    QDateTime current) {
     Message*    msg      = new Message(namespaces);
     QDomElement security = newElement("wsse:Security");
 
     QDomElement usernameToken = newElement("wsse:UsernameToken");
     // usernameToken.setAttribute("wsu:Id", "UsernameToken-1");
-    QDateTime current = QDateTime::currentDateTimeUtc();
-    QString   timeString =
-        current.toString(Qt::ISODate);
+    QString   timeString = current.toString(Qt::ISODate);
     /* PasswordDigest  */
     QDomElement username = newElement("wsse:Username", name);
     QString     passwdDigest;
@@ -138,17 +138,17 @@ Message::getMessageWithUserInfo(
         "oasis-200401-wss-username-token-profile-1.0#"
         "PasswordDigest");
     usernameToken.appendChild(username);
-    usernameToken.appendChild(password); // todo
+    usernameToken.appendChild(password);
     usernameToken.appendChild(nonce);
     usernameToken.appendChild(newElement("wsu:Created", timeString));
-#if 1
+    security.appendChild(usernameToken);
+#if 0
     QDomElement timestamp = newElement("wsu:Timestamp");
     timestamp.setAttribute("wsu:Id", "Timestamp-2");
     timestamp.appendChild(newElement("wsu:Created", current.toTimeSpec(Qt::UTC).toString("yyyy-MM-ddThh:mm:ss")));
-    timestamp.appendChild(newElement("wsu:Expires", current.toTimeSpec(Qt::UTC).addSecs(10).toString("yyyy-MM-ddThh:mm:ss")));
+    timestamp.appendChild(newElement("wsu:Expires", current.toTimeSpec(Qt::UTC).addSecs(60).toString("yyyy-MM-ddThh:mm:ss")));
+    security.appendChild(timestamp);
 #endif
-    security.appendChild(usernameToken);
-     security.appendChild(timestamp);
     msg->appendToHeader(security);
     return msg;
 }
