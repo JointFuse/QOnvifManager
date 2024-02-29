@@ -28,17 +28,23 @@ QDomElement AbsoluteMove::toxml()
     if (m_z) positionZoom.setAttribute("x",this->positionZoomX());
 //    positionZoom.setAttribute("space",this->positionZoomSpace());
     QDomElement speed = newElement("wsdl:Speed");
-    QDomElement speedPanTilt = newElement("sch:PanTilt");
-    speedPanTilt.setAttribute("x",this->speedPanTiltX());
-    speedPanTilt.setAttribute("y",this->speedPanTiltY());
 //    speedPanTilt.setAttribute("space",this->speedPanTiltSpace());
-    QDomElement speedZoom = newElement("sch:Zoom");
-    speedZoom.setAttribute("x",this->speedZoomX());
 //    speedZoom.setAttribute("space",this->speedZoomSpace());
-    position.appendChild(positionPanTilt);
-    position.appendChild(positionZoom);
-    speed.appendChild(speedPanTilt);
-    speed.appendChild(speedZoom);
+    if (m_x || m_y)
+    {
+        position.appendChild(positionPanTilt);
+        QDomElement speedPanTilt = newElement("sch:PanTilt");
+        if (m_x) speedPanTilt.setAttribute("x",this->speedPanTiltX());
+        if (m_y) speedPanTilt.setAttribute("y",this->speedPanTiltY());
+        speed.appendChild(speedPanTilt);
+    }
+    if (m_z)
+    {
+        position.appendChild(positionZoom);
+        QDomElement speedZoom = newElement("sch:Zoom");
+        speedZoom.setAttribute("x",this->speedZoomX());
+        speed.appendChild(speedZoom);
+    }
     absoluteMove.appendChild(profileToken);
     absoluteMove.appendChild(position);
     absoluteMove.appendChild(speed);
