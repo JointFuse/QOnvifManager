@@ -101,6 +101,10 @@ public:
 
     void setMediaProfile(QString token);
     QString mediaProfile();
+
+    void setUsername(QString arg);
+    void setPassword(QString arg);
+
 private:
     Q_DECLARE_PRIVATE(QOnvifDevice)
     QScopedPointer<QOnvifDevicePrivate> d_ptr;

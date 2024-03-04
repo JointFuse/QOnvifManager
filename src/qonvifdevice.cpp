@@ -1303,13 +1303,20 @@ public:
     void setMediaProfile(QString token) {
         iMediaProfile = token;
     }
-
     QString mediaProfile() {
         return iMediaProfile;
     }
+    void setUsername(QString arg) {
+        ideviceManagement->setUsername(arg);
+        imediaManagement->setUsername(arg);
+        iptzManagement->setUsername(arg);
+    }
+    void setPassword(QString arg) {
+        ideviceManagement->setPassword(arg);
+        imediaManagement->setPassword(arg);
+        iptzManagement->setPassword(arg);
+    }
 };
-
-// QOnvifDevice::QOnvifDevice() {}
 
 QOnvifDevice::QOnvifDevice(
     QString  _serviceAddress,
@@ -1602,6 +1609,16 @@ QOnvifDevice::setMediaProfile(QString token) {
 QString
 QOnvifDevice::mediaProfile() {
     return d_ptr->mediaProfile();
+}
+
+void
+QOnvifDevice::setUsername(QString arg) {
+    d_ptr->setUsername(arg);
+}
+
+void
+QOnvifDevice::setPassword(QString arg) {
+    d_ptr->setPassword(arg);
 }
 
 

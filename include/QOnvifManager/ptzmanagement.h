@@ -43,6 +43,7 @@ namespace ONVIF {
         void relativeMoving(RelativeMove *relativeMove, const int Hz, const int duration);
         void oneSecContinuousMove(QString profileToken, int delayMsec);
 #endif
+
     protected:
         Message *newMessage();
         const QHash<QString, QString>& namespaces(const QString &key);
