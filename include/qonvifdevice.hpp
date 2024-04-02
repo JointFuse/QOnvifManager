@@ -76,6 +76,7 @@ public:
 
     bool focusAbsoluteMove(float position);
     bool focusContinuousMove(float speed);
+    bool focusRelativeMove(float distance);
     bool focusStopMove();
 
     // ptz management

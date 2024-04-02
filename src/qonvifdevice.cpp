@@ -552,6 +552,19 @@ public:
         return res;
     }
 
+    bool focusRelativeMove(float distance) {
+        ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
+        focusMove->setMoveType((int)ONVIF::MoveType::Relative);
+        focusMove->setDistance(distance);
+        if (idata.mediaConfig.video.sourceConfig.sourceToken.size())
+            focusMove->setVideoSourceToken(
+                idata.mediaConfig.video.sourceConfig.sourceToken.first());
+        imediaManagement->focusMove(focusMove);
+        bool res = focusMove->result();
+        delete focusMove;
+        return res;
+    }
+
     bool focusStopMove() {
         ONVIF::FocusMove* focusMove = new ONVIF::FocusMove;
         focusMove->setMoveType((int)ONVIF::MoveType::Stop);
@@ -1474,6 +1487,11 @@ QOnvifDevice::focusAbsoluteMove(float position) {
 bool
 QOnvifDevice::focusContinuousMove(float speed) {
     return d_ptr->focusContinuousMove(speed);
+}
+
+bool
+QOnvifDevice::focusRelativeMove(float distance) {
+    return d_ptr->focusRelativeMove(distance);
 }
 
 bool
