@@ -1113,8 +1113,9 @@ public:
         continuousMove->setPanTiltY(y);
         continuousMove->setZoomX(z);
         iptzManagement->continuousMove(continuousMove);
+        const auto res = continuousMove->result();
         delete continuousMove;
-        return true;
+        return res;
     }
     bool absoluteMove(const std::map<ONVIF::Axis, float> vls) {
         ONVIF::AbsoluteMove* absoluteMove = new ONVIF::AbsoluteMove;
@@ -1142,8 +1143,9 @@ public:
                 absoluteMove->setPositionZoomSpace(idata.ptz.config.defaultAbsoluteZoomPositionSpace);
         }
         iptzManagement->absoluteMove(absoluteMove);
+        const auto res = absoluteMove->result();
         delete absoluteMove;
-        return true;
+        return res;
     }
     bool relativeMove(const std::map<ONVIF::Axis, float> vls) {
         ONVIF::RelativeMove* relativeMove = new ONVIF::RelativeMove;
@@ -1170,8 +1172,9 @@ public:
                 relativeMove->setTranslationZoomSpace(idata.ptz.config.defaultRelativeZoomTranslationSpace);
         }
         iptzManagement->relativeMove(relativeMove);
+        const auto res = relativeMove->result();
         delete relativeMove;
-        return true;
+        return res;
     }
     bool comboMove(const std::map<ONVIF::Axis, float>& cntMp,
                    const std::map<ONVIF::Axis, float>& absMp,
@@ -1309,8 +1312,9 @@ public:
         stop->setPanTilt(true);
         stop->setZoom(true);
         iptzManagement->stop(stop);
+        const auto res = stop->result();
         delete stop;
-        return true;
+        return res;
     }
 
     void setMediaProfile(QString token) {
